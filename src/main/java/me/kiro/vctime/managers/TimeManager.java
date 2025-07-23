@@ -245,9 +245,18 @@ public class TimeManager {
                 .replace("{player}", player.getName())
                 .replace("{threshold}", thresholdDisplay);
         
-        // Execute command on main thread
+        // Execute command on main thread with error handling
         Bukkit.getScheduler().runTask(plugin, () -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+            try {
+                boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+                if (success) {
+                    plugin.getLogger().info("Successfully executed reward command: " + finalCommand);
+                } else {
+                    plugin.getLogger().warning("Failed to execute reward command: " + finalCommand);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error executing reward command '" + finalCommand + "': " + e.getMessage());
+            }
         });
         
         plugin.getLogger().info("Gave reward to " + player.getName() + " for " + thresholdDisplay);
