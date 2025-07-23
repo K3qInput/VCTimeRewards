@@ -1,0 +1,20 @@
+# Test configuration with multiple command formats for compatibility
+rewards:
+  # Test with basic give command (most compatible)
+  "1m": "give {player} coal 5"
+  
+  # Test with alternative formats if basic doesn't work
+  # "1m": "minecraft:give {player} coal 5"
+  # "1m": "give {player} minecraft:coal 5"
+  # "1m": "/give {player} coal 5"
+  
+  # Working rewards
+  "5m": "give {player} iron_ingot 3"
+  "30m": "give {player} iron_ingot 10"
+  "1h": "give {player} diamond 5"
+  "3h": "give {player} diamond_block 2"
+  "5h": "give {player} netherite_ingot 1"
+  "10h": "give {player} enchanted_golden_apple 3"
+  "25h": "give {player} elytra 1"
+  "50h": "give {player} beacon 1"
+  "100h": "give {player} dragon_egg 1"
