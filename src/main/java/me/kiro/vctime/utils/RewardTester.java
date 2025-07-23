@@ -19,26 +19,34 @@ public class RewardTester {
      * Test if a reward command works by executing it directly
      */
     public boolean testRewardCommand(Player player, String command) {
-        try {
-            // Replace placeholder
-            String finalCommand = command.replace("{player}", player.getName()).replace("{threshold}", "test");
-            
-            plugin.getLogger().info("Testing command: " + finalCommand);
-            
-            // Execute command
-            boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-            
-            if (success) {
-                plugin.getLogger().info("✓ Command executed successfully: " + finalCommand);
-                return true;
-            } else {
-                plugin.getLogger().warning("✗ Command failed to execute: " + finalCommand);
-                return false;
+        // Test multiple command formats to find what works on this server
+        String[] formats = {
+            command.replace("{player}", player.getName()).replace("{threshold}", "test"),
+            command.replace("minecraft:", "").replace("{player}", player.getName()).replace("{threshold}", "test"),
+            "/" + command.replace("{player}", player.getName()).replace("{threshold}", "test"),
+            "give " + player.getName() + " coal 1", // Simple test command
+            "minecraft:give " + player.getName() + " minecraft:coal 1" // Full format test
+        };
+        
+        for (String testCommand : formats) {
+            try {
+                plugin.getLogger().info("Testing command: " + testCommand);
+                
+                boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), testCommand);
+                
+                if (success) {
+                    plugin.getLogger().info("✓ SUCCESS: " + testCommand);
+                    return true;
+                } else {
+                    plugin.getLogger().warning("✗ FAILED: " + testCommand);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("✗ ERROR with '" + testCommand + "': " + e.getMessage());
             }
-        } catch (Exception e) {
-            plugin.getLogger().severe("✗ Command execution error: " + e.getMessage());
-            return false;
         }
+        
+        plugin.getLogger().severe("✗ ALL FORMATS FAILED for original command: " + command);
+        return false;
     }
     
     /**

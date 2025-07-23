@@ -1,20 +1,35 @@
-# Test configuration with multiple command formats for compatibility
-rewards:
-  # Test with basic give command (most compatible)
+# ALTERNATIVE REWARD FORMATS - Try these if the main config doesn't work
+# Copy and paste these into your main config.yml if needed
+
+# Format 1: Simple give command (works on most servers)
+simple_rewards:
   "1m": "give {player} coal 5"
-  
-  # Test with alternative formats if basic doesn't work
-  # "1m": "minecraft:give {player} coal 5"
-  # "1m": "give {player} minecraft:coal 5"
-  # "1m": "/give {player} coal 5"
-  
-  # Working rewards
   "5m": "give {player} iron_ingot 3"
   "30m": "give {player} iron_ingot 10"
   "1h": "give {player} diamond 5"
-  "3h": "give {player} diamond_block 2"
-  "5h": "give {player} netherite_ingot 1"
-  "10h": "give {player} enchanted_golden_apple 3"
-  "25h": "give {player} elytra 1"
-  "50h": "give {player} beacon 1"
-  "100h": "give {player} dragon_egg 1"
+
+# Format 2: Full minecraft namespace (current default)
+full_namespace_rewards:
+  "1m": "minecraft:give {player} minecraft:coal 5"
+  "5m": "minecraft:give {player} minecraft:iron_ingot 3"
+  "30m": "minecraft:give {player} minecraft:iron_ingot 10"
+  "1h": "minecraft:give {player} minecraft:diamond 5"
+
+# Format 3: With slash prefix (some servers need this)
+slash_prefix_rewards:
+  "1m": "/give {player} coal 5"
+  "5m": "/give {player} iron_ingot 3"
+  "30m": "/give {player} iron_ingot 10"
+  "1h": "/give {player} diamond 5"
+
+# Format 4: Item namespace only
+item_namespace_rewards:
+  "1m": "give {player} minecraft:coal 5"
+  "5m": "give {player} minecraft:iron_ingot 3"
+  "30m": "give {player} minecraft:iron_ingot 10"
+  "1h": "give {player} minecraft:diamond 5"
+
+# HOW TO USE:
+# 1. Use /vctimeadmin test to see which format works
+# 2. Copy the working format to your main config.yml
+# 3. Replace the "rewards:" section with the working format

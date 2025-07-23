@@ -245,21 +245,53 @@ public class TimeManager {
                 .replace("{player}", player.getName())
                 .replace("{threshold}", thresholdDisplay);
         
-        // Execute command on main thread with error handling
+        // Execute command on main thread with fallback formats
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-                if (success) {
-                    plugin.getLogger().info("Successfully executed reward command: " + finalCommand);
-                } else {
-                    plugin.getLogger().warning("Failed to execute reward command: " + finalCommand);
+            String[] commandFormats = {
+                finalCommand, // Original format
+                finalCommand.replace("minecraft:", ""), // Without namespace
+                "/" + finalCommand, // With slash prefix
+                "give " + player.getName() + " " + extractItemFromCommand(finalCommand) // Simple give format
+            };
+            
+            boolean executed = false;
+            for (String cmdFormat : commandFormats) {
+                try {
+                    boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmdFormat);
+                    if (success) {
+                        plugin.getLogger().info("✓ REWARD SUCCESS: " + cmdFormat);
+                        executed = true;
+                        break;
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().fine("Command format failed: " + cmdFormat);
                 }
-            } catch (Exception e) {
-                plugin.getLogger().severe("Error executing reward command '" + finalCommand + "': " + e.getMessage());
+            }
+            
+            if (!executed) {
+                plugin.getLogger().severe("✗ ALL REWARD FORMATS FAILED for: " + finalCommand);
             }
         });
         
         plugin.getLogger().info("Gave reward to " + player.getName() + " for " + thresholdDisplay);
+    }
+    
+    /**
+     * Extract item and quantity from give command for fallback
+     */
+    private String extractItemFromCommand(String command) {
+        try {
+            // Extract from commands like "minecraft:give player minecraft:item quantity"
+            String[] parts = command.split(" ");
+            if (parts.length >= 3) {
+                String item = parts[2].replace("minecraft:", "");
+                String quantity = parts.length > 3 ? parts[3] : "1";
+                return item + " " + quantity;
+            }
+        } catch (Exception e) {
+            plugin.getLogger().fine("Could not extract item from command: " + command);
+        }
+        return "coal 1"; // Safe fallback
     }
     
     /**
