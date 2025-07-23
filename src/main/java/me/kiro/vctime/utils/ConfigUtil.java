@@ -52,24 +52,45 @@ public class ConfigUtil {
     }
     
     /**
-     * Get reward commands mapped to hour thresholds
+     * Get reward commands mapped to minute thresholds (supports both minutes and hours)
      */
-    public Map<Integer, String> getRewardCommands() {
-        Map<Integer, String> rewards = new HashMap<>();
+    public Map<Long, String> getRewardCommands() {
+        Map<Long, String> rewards = new HashMap<>();
         
         if (config.isConfigurationSection("rewards")) {
             for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
                 try {
-                    int hours = Integer.parseInt(key);
+                    long minutes = parseTimeToMinutes(key);
                     String command = config.getString("rewards." + key);
-                    rewards.put(hours, command);
+                    rewards.put(minutes, command);
                 } catch (NumberFormatException e) {
-                    plugin.getLogger().warning("Invalid reward threshold: " + key);
+                    plugin.getLogger().warning("Invalid reward threshold: " + key + " (use format like '30m', '1h', or just number for hours)");
                 }
             }
         }
         
         return rewards;
+    }
+    
+    /**
+     * Parse time string to minutes
+     * Supports formats: "30m" (30 minutes), "2h" (2 hours), "120" (120 hours for backwards compatibility)
+     */
+    private long parseTimeToMinutes(String timeStr) throws NumberFormatException {
+        timeStr = timeStr.toLowerCase().trim();
+        
+        if (timeStr.endsWith("m")) {
+            // Minutes format: "30m"
+            String numberStr = timeStr.substring(0, timeStr.length() - 1);
+            return Long.parseLong(numberStr);
+        } else if (timeStr.endsWith("h")) {
+            // Hours format: "2h"  
+            String numberStr = timeStr.substring(0, timeStr.length() - 1);
+            return Long.parseLong(numberStr) * 60; // Convert hours to minutes
+        } else {
+            // Plain number - treat as hours for backwards compatibility
+            return Long.parseLong(timeStr) * 60; // Convert hours to minutes
+        }
     }
     
     /**

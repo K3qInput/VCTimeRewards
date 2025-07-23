@@ -25,7 +25,7 @@ public class TimeManager {
     private final Map<UUID, Long> playerStartTimes;
     private final Map<UUID, String> playerChannels;
     private final Map<UUID, Long> totalTimes;
-    private final Map<UUID, Set<Integer>> playerRewards; // Track which rewards players have received
+    private final Map<UUID, Set<Long>> playerRewards; // Track which rewards players have received (in minutes)
     private final File dataFile;
     private FileConfiguration dataConfig;
     private BukkitRunnable saveTask;
@@ -206,17 +206,17 @@ public class TimeManager {
      * Check if a player should receive rewards based on their total time
      */
     private void checkForRewards(Player player, long totalTime) {
-        // Convert to hours
-        double hours = totalTime / (1000.0 * 60.0 * 60.0);
+        // Convert to minutes
+        long minutes = totalTime / (1000L * 60L);
         
-        // Get reward thresholds from config
-        Map<Integer, String> rewards = plugin.getConfigUtil().getRewardCommands();
+        // Get reward thresholds from config (now in minutes)
+        Map<Long, String> rewards = plugin.getConfigUtil().getRewardCommands();
         
-        for (Map.Entry<Integer, String> entry : rewards.entrySet()) {
-            int threshold = entry.getKey();
+        for (Map.Entry<Long, String> entry : rewards.entrySet()) {
+            long threshold = entry.getKey();
             String command = entry.getValue();
             
-            if (hours >= threshold && !hasReceivedReward(player, threshold)) {
+            if (minutes >= threshold && !hasReceivedReward(player, threshold)) {
                 // Give reward
                 giveReward(player, command, threshold);
                 markRewardReceived(player, threshold);
@@ -227,40 +227,61 @@ public class TimeManager {
     /**
      * Give a reward to a player
      */
-    private void giveReward(Player player, String command, int threshold) {
+    private void giveReward(Player player, String command, long threshold) {
+        // Format threshold for display (convert minutes to readable format)
+        String thresholdDisplay = formatMinutes(threshold);
+        
         // Replace placeholders
         String finalCommand = command
                 .replace("{player}", player.getName())
-                .replace("{threshold}", String.valueOf(threshold));
+                .replace("{threshold}", thresholdDisplay);
         
         // Execute command on main thread
         Bukkit.getScheduler().runTask(plugin, () -> {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
         });
         
-        plugin.getLogger().info("Gave reward to " + player.getName() + " for " + threshold + " hours");
+        plugin.getLogger().info("Gave reward to " + player.getName() + " for " + thresholdDisplay);
+    }
+    
+    /**
+     * Format minutes into readable time string
+     */
+    private String formatMinutes(long minutes) {
+        if (minutes < 60) {
+            return minutes + "m";
+        } else {
+            long hours = minutes / 60;
+            long remainingMinutes = minutes % 60;
+            if (remainingMinutes == 0) {
+                return hours + "h";
+            } else {
+                return hours + "h" + remainingMinutes + "m";
+            }
+        }
     }
     
     /**
      * Check if a player has already received a specific reward
      */
-    private boolean hasReceivedReward(Player player, int threshold) {
+    private boolean hasReceivedReward(Player player, long threshold) {
         UUID playerId = player.getUniqueId();
-        Set<Integer> rewards = playerRewards.getOrDefault(playerId, new HashSet<>());
+        Set<Long> rewards = playerRewards.getOrDefault(playerId, new HashSet<>());
         return rewards.contains(threshold);
     }
     
     /**
      * Mark that a player has received a specific reward
      */
-    private void markRewardReceived(Player player, int threshold) {
+    private void markRewardReceived(Player player, long threshold) {
         UUID playerId = player.getUniqueId();
         playerRewards.computeIfAbsent(playerId, k -> new HashSet<>()).add(threshold);
         
         // Send notification if enabled
         if (plugin.getConfigUtil().shouldSendNotifications()) {
+            String thresholdDisplay = formatMinutes(threshold);
             String message = plugin.getConfigUtil().getNotificationMessage()
-                    .replace("{time}", String.valueOf(threshold));
+                    .replace("{time}", thresholdDisplay);
             player.sendMessage(message);
         }
     }
@@ -292,9 +313,9 @@ public class TimeManager {
             }
             
             // Save received rewards
-            for (Map.Entry<UUID, Set<Integer>> entry : playerRewards.entrySet()) {
+            for (Map.Entry<UUID, Set<Long>> entry : playerRewards.entrySet()) {
                 dataConfig.set("players." + entry.getKey().toString() + ".rewards", 
-                             entry.getValue().toArray(new Integer[0]));
+                             entry.getValue().toArray(new Long[0]));
             }
             
             // Save current tracking sessions
@@ -343,8 +364,8 @@ public class TimeManager {
                         totalTimes.put(playerId, totalTime);
                     }
                     
-                    // Load received rewards
-                    java.util.List<Integer> rewardsList = dataConfig.getIntegerList("players." + uuidString + ".rewards");
+                    // Load received rewards  
+                    java.util.List<Long> rewardsList = dataConfig.getLongList("players." + uuidString + ".rewards");
                     if (!rewardsList.isEmpty()) {
                         playerRewards.put(playerId, new HashSet<>(rewardsList));
                     }

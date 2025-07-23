@@ -37,17 +37,20 @@ blacklisted-channels:
 # REWARD SYSTEM
 # =================================================================
 
-# Reward commands executed when players reach time thresholds (in hours)
+# Reward commands executed when players reach time thresholds
+# Time can be specified in minutes (m), hours (h), or just numbers (treated as hours for compatibility)
 # Commands are executed from console - use proper permissions
-# Available placeholders: {player} = player name, {threshold} = hours reached
+# Available placeholders: {player} = player name, {threshold} = time reached
 rewards:
-  1: "give {player} diamond 5"                    # 1 hour: 5 diamonds
-  3: "give {player} diamond_block 2"              # 3 hours: 2 diamond blocks  
-  5: "give {player} netherite_ingot 1"            # 5 hours: 1 netherite ingot
-  10: "give {player} enchanted_golden_apple 3"    # 10 hours: 3 golden apples
-  25: "give {player} elytra 1"                    # 25 hours: elytra
-  50: "give {player} beacon 1"                    # 50 hours: beacon
-  100: "give {player} dragon_egg 1"               # 100 hours: dragon egg
+  "30m": "give {player} iron_ingot 10"            # 30 minutes: 10 iron ingots
+  "1h": "give {player} diamond 5"                 # 1 hour: 5 diamonds
+  "90m": "give {player} emerald 3"                # 1.5 hours: 3 emeralds
+  "3h": "give {player} diamond_block 2"           # 3 hours: 2 diamond blocks  
+  "5h": "give {player} netherite_ingot 1"         # 5 hours: 1 netherite ingot
+  "10h": "give {player} enchanted_golden_apple 3" # 10 hours: 3 golden apples
+  "25h": "give {player} elytra 1"                 # 25 hours: elytra
+  "50h": "give {player} beacon 1"                 # 50 hours: beacon
+  "100h": "give {player} dragon_egg 1"            # 100 hours: dragon egg
 
 # =================================================================
 # NOTIFICATIONS

@@ -104,11 +104,18 @@ Preferred communication style: Simple, everyday language.
 - **💾 Data Persistence**: Automatic saves every 5 minutes + shutdown protection
 - **🔧 Configuration**: Enhanced config with detailed documentation and examples
 
-### Next Development Steps (Optional Enhancements)
+### Latest Enhancement (July 23, 2025)
+✅ **MINUTE-BASED REWARDS IMPLEMENTED**
+- Enhanced configuration parser supporting "30m", "1h", "90m" formats
+- Smart time conversion with backwards compatibility  
+- Improved notification system with readable time display
+- Complete reward system overhaul for minute-precision tracking
+
+### Next Development Steps (Optional Future Enhancements)
 1. → Add persistent database storage for time data
-2. → Implement reward tracking to prevent duplicate rewards
-3. → Add configuration validation and error handling
-4. → Create admin commands for managing player times
+2. → Add configuration validation and error handling
+3. → Implement seasonal/event-based rewards
+4. → Add leaderboard functionality
 
 ## Additional Notes
 
