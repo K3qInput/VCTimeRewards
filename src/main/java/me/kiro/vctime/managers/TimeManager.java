@@ -45,6 +45,7 @@ public class TimeManager {
         
         // Start periodic tasks
         startSaveTask();
+        startRewardCheckTask();
         
         plugin.getLogger().info("TimeManager initialized with " + totalTimes.size() + " player records");
     }
@@ -209,17 +210,25 @@ public class TimeManager {
         // Convert to minutes
         long minutes = totalTime / (1000L * 60L);
         
+        // Debug logging
+        plugin.getLogger().info("Checking rewards for " + player.getName() + " - Total time: " + minutes + " minutes");
+        
         // Get reward thresholds from config (now in minutes)
         Map<Long, String> rewards = plugin.getConfigUtil().getRewardCommands();
+        plugin.getLogger().info("Available rewards: " + rewards.keySet());
         
         for (Map.Entry<Long, String> entry : rewards.entrySet()) {
             long threshold = entry.getKey();
             String command = entry.getValue();
             
-            if (minutes >= threshold && !hasReceivedReward(player, threshold)) {
+            boolean hasReward = hasReceivedReward(player, threshold);
+            plugin.getLogger().info("Threshold " + threshold + "min: player has " + minutes + "min, already received: " + hasReward);
+            
+            if (minutes >= threshold && !hasReward) {
                 // Give reward
                 giveReward(player, command, threshold);
                 markRewardReceived(player, threshold);
+                plugin.getLogger().info("REWARD GIVEN: " + player.getName() + " reached " + threshold + " minutes!");
             }
         }
     }
@@ -296,6 +305,25 @@ public class TimeManager {
                 saveAll();
             }
         }.runTaskTimerAsynchronously(plugin, 20L * 60L * 5L, 20L * 60L * 5L); // Save every 5 minutes
+    }
+    
+    /**
+     * Start periodic reward check task for active players
+     */
+    private void startRewardCheckTask() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Check rewards for all currently tracked players
+                for (UUID playerId : playerStartTimes.keySet()) {
+                    Player player = plugin.getServer().getPlayer(playerId);
+                    if (player != null && player.isOnline()) {
+                        long totalTime = getTotalTime(player);
+                        checkForRewards(player, totalTime);
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 20L * 30L, 20L * 30L); // Check every 30 seconds
     }
     
     /**
