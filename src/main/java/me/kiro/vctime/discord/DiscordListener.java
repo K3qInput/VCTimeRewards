@@ -267,7 +267,7 @@ public class DiscordListener implements Listener {
     
     /**
      * Get the linked Minecraft player UUID from a Discord user ID
-     * Works for both online and offline players
+     * Uses safe approach to handle different DiscordSRV API versions
      */
     private UUID getLinkedPlayerUuid(String discordId) {
         if (discordId == null || discordId.isEmpty()) {
@@ -275,8 +275,42 @@ public class DiscordListener implements Listener {
         }
         
         try {
-            // Use DiscordSRV's account linking system to get UUID from Discord ID
-            UUID playerUuid = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
+            // Use reflection-based approach to handle interface/class compatibility
+            UUID playerUuid = null;
+            
+            // Method 1: Try getting AccountLinkManager and call getUuid
+            try {
+                Object accountLinkManager = DiscordSRV.getPlugin().getAccountLinkManager();
+                if (accountLinkManager != null) {
+                    // Use reflection to safely call getUuid method
+                    java.lang.reflect.Method getUuidMethod = accountLinkManager.getClass().getMethod("getUuid", String.class);
+                    Object result = getUuidMethod.invoke(accountLinkManager, discordId);
+                    if (result instanceof UUID) {
+                        playerUuid = (UUID) result;
+                    }
+                }
+            } catch (Exception e1) {
+                // AccountLinkManager approach failed, try alternatives
+                plugin.getLogger().fine("AccountLinkManager approach failed: " + e1.getMessage());
+                
+                // Method 2: Try using DiscordSRV static methods (fallback for older versions)
+                try {
+                    // Try commonly available static method
+                    java.lang.reflect.Method[] methods = DiscordSRV.class.getDeclaredMethods();
+                    for (java.lang.reflect.Method method : methods) {
+                        if (method.getName().contains("getUuid") && method.getParameterCount() == 1) {
+                            method.setAccessible(true);
+                            Object result = method.invoke(null, discordId);
+                            if (result instanceof UUID) {
+                                playerUuid = (UUID) result;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e2) {
+                    plugin.getLogger().fine("Static method fallback failed: " + e2.getMessage());
+                }
+            }
             
             if (playerUuid == null) {
                 plugin.getLogger().fine("No linked Minecraft account found for Discord ID: " + discordId);
@@ -302,7 +336,7 @@ public class DiscordListener implements Listener {
     
     /**
      * Get the linked Minecraft player from a Discord user ID
-     * Uses DiscordSRV's linking system
+     * Uses DiscordSRV's linking system with compatibility handling
      */
     private Player getLinkedPlayer(String discordId) {
         if (discordId == null || discordId.isEmpty()) {
@@ -310,8 +344,8 @@ public class DiscordListener implements Listener {
         }
         
         try {
-            // Use DiscordSRV's account linking system to get UUID from Discord ID
-            UUID playerUuid = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
+            // Get UUID using the compatible method
+            UUID playerUuid = getLinkedPlayerUuid(discordId);
             
             if (playerUuid == null) {
                 plugin.getLogger().fine("No linked Minecraft account found for Discord ID: " + discordId);
