@@ -42,15 +42,28 @@ public class TimeManager {
         }
         
         UUID playerId = player.getUniqueId();
+        startTracking(playerId, channelId);
+    }
+    
+    /**
+     * Start tracking time for a player UUID in a voice channel
+     */
+    public void startTracking(UUID playerId, String channelId) {
+        if (playerId == null || channelId == null) {
+            return;
+        }
+        
         long currentTime = System.currentTimeMillis();
         
         // Stop any existing tracking
-        stopTracking(player);
+        stopTracking(playerId);
         
         playerStartTimes.put(playerId, currentTime);
         playerChannels.put(playerId, channelId);
         
-        plugin.getLogger().info("Started tracking " + player.getName() + " in channel " + channelId);
+        Player player = plugin.getServer().getPlayer(playerId);
+        String playerName = player != null ? player.getName() : playerId.toString();
+        plugin.getLogger().info("Started tracking " + playerName + " in channel " + channelId);
     }
     
     /**
@@ -62,7 +75,42 @@ public class TimeManager {
         }
         
         UUID playerId = player.getUniqueId();
-        stopTracking(player, null);
+        stopTracking(playerId);
+    }
+    
+    /**
+     * Stop tracking time for a player UUID
+     */
+    public void stopTracking(UUID playerId) {
+        if (playerId == null) {
+            return;
+        }
+        
+        if (!playerStartTimes.containsKey(playerId)) {
+            return;
+        }
+        
+        long startTime = playerStartTimes.get(playerId);
+        long currentTime = System.currentTimeMillis();
+        long sessionTime = currentTime - startTime;
+        
+        // Add to total time
+        long currentTotal = totalTimes.getOrDefault(playerId, 0L);
+        totalTimes.put(playerId, currentTotal + sessionTime);
+        
+        // Remove from tracking
+        playerStartTimes.remove(playerId);
+        playerChannels.remove(playerId);
+        
+        Player player = plugin.getServer().getPlayer(playerId);
+        String playerName = player != null ? player.getName() : playerId.toString();
+        plugin.getLogger().info("Stopped tracking " + playerName + 
+                              ". Session time: " + (sessionTime / 1000) + " seconds");
+        
+        // Check for rewards if player is online
+        if (player != null) {
+            checkForRewards(player, currentTotal + sessionTime);
+        }
     }
     
     /**
@@ -96,6 +144,17 @@ public class TimeManager {
         
         // Check for rewards
         checkForRewards(player, currentTotal + sessionTime);
+    }
+    
+    /**
+     * Stop all active tracking sessions
+     */
+    public void stopAllTracking() {
+        // Stop all active sessions and save their time
+        for (UUID playerId : new HashMap<>(playerStartTimes).keySet()) {
+            stopTracking(playerId);
+        }
+        plugin.getLogger().info("Stopped all active voice channel tracking sessions");
     }
     
     /**

@@ -52,11 +52,20 @@ public class VCTimeRewards extends JavaPlugin {
         
         // Clean up Discord listener
         if (discordListener != null) {
-            // Discord listener cleanup handled automatically by Bukkit event system
+            try {
+                // Unregister from JDA through DiscordSRV
+                if (DiscordSRV.getPlugin() != null && DiscordSRV.getPlugin().getJda() != null) {
+                    DiscordSRV.getPlugin().getJda().removeEventListener(discordListener);
+                    getLogger().info("Successfully unregistered Discord event listeners.");
+                }
+            } catch (Exception e) {
+                getLogger().warning("Error unregistering Discord listeners: " + e.getMessage());
+            }
         }
         
-        // Save any pending data
+        // Stop all active tracking sessions and save data
         if (timeManager != null) {
+            timeManager.stopAllTracking();
             timeManager.saveAll();
         }
         

@@ -93,4 +93,11 @@ public class ConfigUtil {
         return config.getString("notification-message", 
                 "&aYou have spent {time} in Discord voice channels!");
     }
+    
+    /**
+     * Get whether both Discord and Minecraft user must be online for time tracking
+     */
+    public boolean requireBothOnline() {
+        return config.getBoolean("require-both-online", false);
+    }
 }
