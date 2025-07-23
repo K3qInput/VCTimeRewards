@@ -62,8 +62,8 @@ rewards:
 send-notifications: true
 
 # Message sent to players when they reach a milestone
-# Available placeholders: {time} = hours reached
-notification-message: "&6🎉 &aCongratulations! You've spent &e{time} hours &ain Discord voice channels!"
+# Available placeholders: {time} = time reached (e.g., "1h", "30m")
+notification-message: "&6🎉 &aCongratulations! You've spent &e{time} &ain Discord voice channels!"
 
 # =================================================================
 # ADVANCED SETTINGS

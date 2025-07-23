@@ -1,6 +1,7 @@
 package me.kiro.vctime.commands;
 
 import me.kiro.vctime.VCTimeRewards;
+import me.kiro.vctime.utils.RewardTester;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -69,6 +70,14 @@ public class VCTimeAdminCommand implements CommandExecutor {
                 listTrackedPlayers(sender);
                 break;
                 
+            case "test":
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage("§cThis command can only be used by players.");
+                    return true;
+                }
+                testRewards((Player) sender);
+                break;
+                
             default:
                 sendHelpMessage(sender);
                 break;
@@ -85,6 +94,7 @@ public class VCTimeAdminCommand implements CommandExecutor {
         sender.sendMessage("§e/vctimeadmin check <player> §7- Check player's time");
         sender.sendMessage("§e/vctimeadmin reset <player> §7- Reset player's time");
         sender.sendMessage("§e/vctimeadmin list §7- List currently tracked players");
+        sender.sendMessage("§e/vctimeadmin test §7- Test all reward commands");
     }
     
     private void showStatus(CommandSender sender) {
@@ -194,5 +204,12 @@ public class VCTimeAdminCommand implements CommandExecutor {
             String channel = plugin.getTimeManager().getCurrentChannel(playerId);
             sender.sendMessage("§e" + playerName + " §7→ §b" + channel);
         }
+    }
+    
+    private void testRewards(Player player) {
+        player.sendMessage("§6Testing all reward commands...");
+        RewardTester tester = new RewardTester(plugin);
+        tester.testAllRewards(player);
+        player.sendMessage("§aReward testing complete! Check console for results.");
     }
 }
