@@ -1,0 +1,36 @@
+19:42:04 INFO]: [VCTimeRewards] Enabling VCTimeRewards v1.0.0
+[19:42:04 INFO]: [VCTimeRewards] Enabling VCTimeRewards plugin...
+[19:42:04 INFO]: [VCTimeRewards] Loaded player time data
+[19:42:04 ERROR]: Error occurred while enabling VCTimeRewards v1.0.0 (Is it up to date?)
+java.lang.NoClassDefFoundError: net/dv8tion/jda/api/hooks/ListenerAdapter
+        at java.base/java.lang.ClassLoader.defineClass1(Native Method) ~[?:?]
+        at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1027) ~[?:?]
+        at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:150) ~[?:?]
+        at org.bukkit.plugin.java.PluginClassLoader.findClass(PluginClassLoader.java:243) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:593) ~[?:?]
+        at org.bukkit.plugin.java.PluginClassLoader.loadClass0(PluginClassLoader.java:169) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at org.bukkit.plugin.java.PluginClassLoader.loadClass(PluginClassLoader.java:164) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526) ~[?:?]
+        at VCTimeRewards-1.0.0 (2).jar/me.kiro.vctime.VCTimeRewards.onEnable(VCTimeRewards.java:39) ~[VCTimeRewards-1.0.0 (2).jar:?]
+        at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:280) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at io.papermc.paper.plugin.manager.PaperPluginInstanceManager.enablePlugin(PaperPluginInstanceManager.java:202) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at io.papermc.paper.plugin.manager.PaperPluginManagerImpl.enablePlugin(PaperPluginManagerImpl.java:109) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at org.bukkit.plugin.SimplePluginManager.enablePlugin(SimplePluginManager.java:519) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at org.bukkit.craftbukkit.CraftServer.enablePlugin(CraftServer.java:676) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at org.bukkit.craftbukkit.CraftServer.enablePlugins(CraftServer.java:625) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at net.minecraft.server.MinecraftServer.loadWorld0(MinecraftServer.java:746) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at net.minecraft.server.MinecraftServer.loadLevel(MinecraftServer.java:491) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at net.minecraft.server.dedicated.DedicatedServer.initServer(DedicatedServer.java:389) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:1187) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:300) ~[leaf-1.21.4.jar:1.21.4-512-dd196dd]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+Caused by: java.lang.ClassNotFoundException: net.dv8tion.jda.api.hooks.ListenerAdapter
+        at org.bukkit.plugin.java.PluginClassLoader.loadClass0(PluginClassLoader.java:197) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at org.bukkit.plugin.java.PluginClassLoader.loadClass(PluginClassLoader.java:164) ~[leaf-api-1.21.4-R0.1-SNAPSHOT.jar:?]
+        at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526) ~[?:?]
+        ... 21 more
+[19:42:04 INFO]: [VCTimeRewards] Disabling VCTimeRewards v1.0.0
+[19:42:04 INFO]: [VCTimeRewards] Disabling VCTimeRewards plugin...
+[19:42:04 INFO]: [VCTimeRewards] Stopped all active voice channel tracking sessions
+[19:42:04 INFO]: [VCTimeRewards] Saved player time data
+[19:42:04 INFO]: [VCTimeRewards] VCTimeRewards plugin disabled!

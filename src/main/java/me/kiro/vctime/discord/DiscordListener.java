@@ -4,21 +4,16 @@ import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.DiscordSRV;
 import me.kiro.vctime.VCTimeRewards;
 import me.kiro.vctime.managers.TimeManager;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import java.util.UUID;
+import java.lang.reflect.Method;
 
 /**
- * Handles Discord voice channel events through JDA via DiscordSRV
+ * Handles Discord voice channel events through DiscordSRV API
  */
-public class DiscordListener extends ListenerAdapter implements Listener {
+public class DiscordListener implements Listener {
     
     private final VCTimeRewards plugin;
     private final TimeManager timeManager;
@@ -29,58 +24,185 @@ public class DiscordListener extends ListenerAdapter implements Listener {
     }
     
     /**
-     * Initialize the Discord listener and register it with DiscordSRV's JDA instance
+     * Initialize the Discord listener using reflection to access JDA events
      */
     public void initializeListener() {
         plugin.getLogger().info("DiscordListener initialized. Voice channel tracking is ready.");
         
-        // Register this listener with JDA through DiscordSRV
+        // Use reflection to register JDA event listener through DiscordSRV
         try {
-            if (DiscordSRV.getPlugin().getJda() != null) {
-                DiscordSRV.getPlugin().getJda().addEventListener(this);
-                plugin.getLogger().info("Successfully registered Discord voice channel event listeners.");
-            } else {
-                plugin.getLogger().warning("DiscordSRV JDA not ready yet. Will retry later.");
-                // Schedule a delayed retry
-                plugin.getServer().getScheduler().runTaskLater(plugin, this::initializeListener, 100L); // 5 seconds
-            }
+            // Wait for DiscordSRV JDA to be ready
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                registerJDAListener();
+            }, 100L); // 5 seconds delay
+            
         } catch (Exception e) {
-            plugin.getLogger().severe("Failed to register Discord listener: " + e.getMessage());
+            plugin.getLogger().severe("Failed to initialize Discord listener: " + e.getMessage());
         }
     }
     
     /**
-     * Handle Discord voice channel join events
+     * Register JDA event listener using reflection
      */
-    @Override
-    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-        Member member = event.getMember();
-        VoiceChannel channel = event.getChannelJoined();
-        
-        if (member == null || channel == null) {
-            return;
+    private void registerJDAListener() {
+        try {
+            Object jda = DiscordSRV.getPlugin().getJda();
+            if (jda != null) {
+                // Create a listener that uses reflection to handle events
+                Object listener = new Object() {
+                    @SuppressWarnings("unused")
+                    public void onGuildVoiceJoin(Object event) {
+                        handleVoiceJoin(event);
+                    }
+                    
+                    @SuppressWarnings("unused")
+                    public void onGuildVoiceLeave(Object event) {
+                        handleVoiceLeave(event);
+                    }
+                    
+                    @SuppressWarnings("unused")
+                    public void onGuildVoiceMove(Object event) {
+                        handleVoiceMove(event);
+                    }
+                };
+                
+                // Register the listener with JDA
+                Method addEventListenerMethod = jda.getClass().getMethod("addEventListener", Object[].class);
+                addEventListenerMethod.invoke(jda, new Object[]{listener});
+                
+                plugin.getLogger().info("Successfully registered Discord voice channel event listeners using reflection.");
+            } else {
+                plugin.getLogger().warning("DiscordSRV JDA not ready yet. Will retry later.");
+                plugin.getServer().getScheduler().runTaskLater(plugin, this::registerJDAListener, 100L);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().severe("Failed to register JDA listener: " + e.getMessage());
+            e.printStackTrace();
         }
-        
-        String discordId = member.getId();
-        String channelId = channel.getId();
-        
-        plugin.getLogger().info("Voice join detected: " + member.getEffectiveName() + " joined " + channel.getName());
-        
+    }
+    
+    /**
+     * Handle Discord voice channel join events using reflection
+     */
+    private void handleVoiceJoin(Object event) {
+        try {
+            // Get member and channel using reflection
+            Method getMemberMethod = event.getClass().getMethod("getMember");
+            Method getChannelJoinedMethod = event.getClass().getMethod("getChannelJoined");
+            
+            Object member = getMemberMethod.invoke(event);
+            Object channel = getChannelJoinedMethod.invoke(event);
+            
+            if (member == null || channel == null) {
+                return;
+            }
+            
+            // Get IDs and names using reflection
+            String discordId = (String) member.getClass().getMethod("getId").invoke(member);
+            String channelId = (String) channel.getClass().getMethod("getId").invoke(channel);
+            String memberName = (String) member.getClass().getMethod("getEffectiveName").invoke(member);
+            String channelName = (String) channel.getClass().getMethod("getName").invoke(channel);
+            
+            plugin.getLogger().info("Voice join detected: " + memberName + " joined " + channelName);
+            
+            processVoiceJoin(discordId, channelId, memberName, channelName, channel);
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error handling voice join event: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handle Discord voice channel leave events using reflection
+     */
+    private void handleVoiceLeave(Object event) {
+        try {
+            // Get member and channel using reflection
+            Method getMemberMethod = event.getClass().getMethod("getMember");
+            Method getChannelLeftMethod = event.getClass().getMethod("getChannelLeft");
+            
+            Object member = getMemberMethod.invoke(event);
+            Object channel = getChannelLeftMethod.invoke(event);
+            
+            if (member == null || channel == null) {
+                return;
+            }
+            
+            // Get IDs and names using reflection
+            String discordId = (String) member.getClass().getMethod("getId").invoke(member);
+            String channelId = (String) channel.getClass().getMethod("getId").invoke(channel);
+            String memberName = (String) member.getClass().getMethod("getEffectiveName").invoke(member);
+            String channelName = (String) channel.getClass().getMethod("getName").invoke(channel);
+            
+            plugin.getLogger().info("Voice leave detected: " + memberName + " left " + channelName);
+            
+            processVoiceLeave(discordId, channelId, memberName);
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error handling voice leave event: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handle Discord voice channel move events using reflection
+     */
+    private void handleVoiceMove(Object event) {
+        try {
+            // Get member and channels using reflection
+            Method getMemberMethod = event.getClass().getMethod("getMember");
+            Method getChannelLeftMethod = event.getClass().getMethod("getChannelLeft");
+            Method getChannelJoinedMethod = event.getClass().getMethod("getChannelJoined");
+            
+            Object member = getMemberMethod.invoke(event);
+            Object oldChannel = getChannelLeftMethod.invoke(event);
+            Object newChannel = getChannelJoinedMethod.invoke(event);
+            
+            if (member == null) {
+                return;
+            }
+            
+            // Get member info
+            String discordId = (String) member.getClass().getMethod("getId").invoke(member);
+            String memberName = (String) member.getClass().getMethod("getEffectiveName").invoke(member);
+            
+            // Get channel info
+            String oldChannelName = oldChannel != null ? (String) oldChannel.getClass().getMethod("getName").invoke(oldChannel) : "unknown";
+            String newChannelName = newChannel != null ? (String) newChannel.getClass().getMethod("getName").invoke(newChannel) : "unknown";
+            
+            plugin.getLogger().info("Voice move detected: " + memberName + " moved from " + oldChannelName + " to " + newChannelName);
+            
+            processVoiceMove(discordId, oldChannel, newChannel, memberName);
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error handling voice move event: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Process voice join with extracted data
+     */
+    private void processVoiceJoin(String discordId, String channelId, String memberName, String channelName, Object channel) {
         // Check if channel should be tracked
         if (!shouldTrackChannel(channelId)) {
-            plugin.getLogger().info("Channel " + channel.getName() + " is not configured for tracking.");
+            plugin.getLogger().info("Channel " + channelName + " is not configured for tracking.");
             return;
         }
         
-        // Check minimum members requirement
-        int memberCount = channel.getMembers().size();
-        int minMembers = plugin.getConfigUtil().getMinimumMembers();
-        if (memberCount < minMembers) {
-            plugin.getLogger().info("Channel " + channel.getName() + " has " + memberCount + " members, minimum required: " + minMembers);
-            return;
+        // Check minimum members requirement using reflection
+        try {
+            Object membersList = channel.getClass().getMethod("getMembers").invoke(channel);
+            int memberCount = ((java.util.List<?>) membersList).size();
+            int minMembers = plugin.getConfigUtil().getMinimumMembers();
+            
+            if (memberCount < minMembers) {
+                plugin.getLogger().info("Channel " + channelName + " has " + memberCount + " members, minimum required: " + minMembers);
+                return;
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Could not check member count: " + e.getMessage());
         }
         
-        // Get linked player UUID (works for both online and offline players)
+        // Get linked player UUID
         UUID playerUuid = getLinkedPlayerUuid(discordId);
         if (playerUuid != null) {
             Player player = plugin.getServer().getPlayer(playerUuid);
@@ -88,27 +210,14 @@ public class DiscordListener extends ListenerAdapter implements Listener {
             plugin.getLogger().info("Starting time tracking for player: " + playerName + " (" + playerUuid + ")");
             timeManager.startTracking(playerUuid, channelId);
         } else {
-            plugin.getLogger().info("No linked Minecraft account found for Discord user: " + member.getEffectiveName());
+            plugin.getLogger().info("No linked Minecraft account found for Discord user: " + memberName);
         }
     }
     
     /**
-     * Handle Discord voice channel leave events
+     * Process voice leave with extracted data
      */
-    @Override
-    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-        Member member = event.getMember();
-        VoiceChannel channel = event.getChannelLeft();
-        
-        if (member == null || channel == null) {
-            return;
-        }
-        
-        String discordId = member.getId();
-        String channelId = channel.getId();
-        
-        plugin.getLogger().info("Voice leave detected: " + member.getEffectiveName() + " left " + channel.getName());
-        
+    private void processVoiceLeave(String discordId, String channelId, String memberName) {
         // Check if channel was being tracked
         if (!shouldTrackChannel(channelId)) {
             return;
@@ -125,23 +234,9 @@ public class DiscordListener extends ListenerAdapter implements Listener {
     }
     
     /**
-     * Handle Discord voice channel move events (user switches channels)
+     * Process voice move with extracted data
      */
-    @Override
-    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
-        Member member = event.getMember();
-        VoiceChannel oldChannel = event.getChannelLeft();
-        VoiceChannel newChannel = event.getChannelJoined();
-        
-        if (member == null) {
-            return;
-        }
-        
-        String discordId = member.getId();
-        plugin.getLogger().info("Voice move detected: " + member.getEffectiveName() + " moved from " + 
-                               (oldChannel != null ? oldChannel.getName() : "unknown") + " to " + 
-                               (newChannel != null ? newChannel.getName() : "unknown"));
-        
+    private void processVoiceMove(String discordId, Object oldChannel, Object newChannel, String memberName) {
         // Get linked player UUID
         UUID playerUuid = getLinkedPlayerUuid(discordId);
         if (playerUuid == null) {
@@ -152,21 +247,39 @@ public class DiscordListener extends ListenerAdapter implements Listener {
         String playerName = player != null ? player.getName() : "Unknown Player";
         
         // Stop tracking old channel if it was being tracked
-        if (oldChannel != null && shouldTrackChannel(oldChannel.getId())) {
-            plugin.getLogger().info("Stopping tracking for old channel: " + oldChannel.getName());
-            timeManager.stopTracking(playerUuid);
+        if (oldChannel != null) {
+            try {
+                String oldChannelId = (String) oldChannel.getClass().getMethod("getId").invoke(oldChannel);
+                if (shouldTrackChannel(oldChannelId)) {
+                    String oldChannelName = (String) oldChannel.getClass().getMethod("getName").invoke(oldChannel);
+                    plugin.getLogger().info("Stopping tracking for old channel: " + oldChannelName);
+                    timeManager.stopTracking(playerUuid);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error processing old channel: " + e.getMessage());
+            }
         }
         
         // Start tracking new channel if it should be tracked
-        if (newChannel != null && shouldTrackChannel(newChannel.getId())) {
-            int memberCount = newChannel.getMembers().size();
-            int minMembers = plugin.getConfigUtil().getMinimumMembers();
-            
-            if (memberCount >= minMembers) {
-                plugin.getLogger().info("Starting tracking for new channel: " + newChannel.getName());
-                timeManager.startTracking(playerUuid, newChannel.getId());
-            } else {
-                plugin.getLogger().info("New channel " + newChannel.getName() + " has " + memberCount + " members, minimum required: " + minMembers);
+        if (newChannel != null) {
+            try {
+                String newChannelId = (String) newChannel.getClass().getMethod("getId").invoke(newChannel);
+                if (shouldTrackChannel(newChannelId)) {
+                    Object membersList = newChannel.getClass().getMethod("getMembers").invoke(newChannel);
+                    int memberCount = ((java.util.List<?>) membersList).size();
+                    int minMembers = plugin.getConfigUtil().getMinimumMembers();
+                    
+                    if (memberCount >= minMembers) {
+                        String newChannelName = (String) newChannel.getClass().getMethod("getName").invoke(newChannel);
+                        plugin.getLogger().info("Starting tracking for new channel: " + newChannelName);
+                        timeManager.startTracking(playerUuid, newChannelId);
+                    } else {
+                        String newChannelName = (String) newChannel.getClass().getMethod("getName").invoke(newChannel);
+                        plugin.getLogger().info("New channel " + newChannelName + " has " + memberCount + " members, minimum required: " + minMembers);
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error processing new channel: " + e.getMessage());
             }
         }
     }

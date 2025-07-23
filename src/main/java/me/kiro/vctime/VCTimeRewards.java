@@ -50,16 +50,12 @@ public class VCTimeRewards extends JavaPlugin {
     public void onDisable() {
         getLogger().info("Disabling VCTimeRewards plugin...");
         
-        // Clean up Discord listener
+        // Clean up Discord listener - JDA cleanup handled automatically
         if (discordListener != null) {
             try {
-                // Unregister from JDA through DiscordSRV
-                if (DiscordSRV.getPlugin() != null && DiscordSRV.getPlugin().getJda() != null) {
-                    DiscordSRV.getPlugin().getJda().removeEventListener(discordListener);
-                    getLogger().info("Successfully unregistered Discord event listeners.");
-                }
+                getLogger().info("Discord event listeners cleanup handled automatically by DiscordSRV.");
             } catch (Exception e) {
-                getLogger().warning("Error unregistering Discord listeners: " + e.getMessage());
+                getLogger().warning("Error during Discord listener cleanup: " + e.getMessage());
             }
         }
         
