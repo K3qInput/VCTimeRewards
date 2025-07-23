@@ -14,17 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Method;
 
 /**
- * Handles Discord voice channel events through DiscordSRV API and periodic checks
+ * Enhanced Discord voice channel tracker with comprehensive monitoring
  */
 public class DiscordListener implements Listener {
     
     private final VCTimeRewards plugin;
     private final TimeManager timeManager;
-    private final Map<UUID, String> currentVoiceChannels = new HashMap<>();
+    private final Map<UUID, String> currentVoiceChannels = new ConcurrentHashMap<>();
+    private final Map<String, Set<UUID>> channelMembers = new ConcurrentHashMap<>();
     private BukkitRunnable voiceCheckTask;
+    private boolean isEnabled = false;
+    private int failedAttempts = 0;
+    private static final int MAX_FAILED_ATTEMPTS = 5;
     
     public DiscordListener(VCTimeRewards plugin, TimeManager timeManager) {
         this.plugin = plugin;
@@ -32,19 +37,32 @@ public class DiscordListener implements Listener {
     }
     
     /**
-     * Initialize the Discord listener with periodic voice channel checking
+     * Initialize the Discord listener with enhanced monitoring
      */
     public void initializeListener() {
-        plugin.getLogger().info("DiscordListener initialized. Starting periodic voice channel checks...");
+        plugin.getLogger().info("Initializing enhanced Discord voice channel tracking...");
         
-        // Wait for DiscordSRV to be ready
+        // Register DiscordSRV API events
+        DiscordSRV.api.subscribe(this);
+        
+        // Wait for DiscordSRV to be ready and start checking
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             startVoiceChannelChecking();
         }, 100L); // 5 seconds delay
     }
     
     /**
-     * Start periodic voice channel checking
+     * Handle DiscordSRV ready event
+     */
+    @Subscribe
+    public void onDiscordReady(DiscordReadyEvent event) {
+        plugin.getLogger().info("DiscordSRV is ready - voice channel tracking can begin");
+        isEnabled = true;
+        failedAttempts = 0;
+    }
+    
+    /**
+     * Start comprehensive voice channel monitoring
      */
     private void startVoiceChannelChecking() {
         if (voiceCheckTask != null) {
@@ -54,32 +72,70 @@ public class DiscordListener implements Listener {
         voiceCheckTask = new BukkitRunnable() {
             @Override
             public void run() {
-                checkVoiceChannels();
+                if (isEnabled) {
+                    checkVoiceChannels();
+                } else {
+                    // Try to initialize DiscordSRV connection
+                    tryInitializeDiscordSRV();
+                }
             }
         };
         
-        // Check every 15 seconds
-        voiceCheckTask.runTaskTimerAsynchronously(plugin, 0L, 300L);
-        plugin.getLogger().info("Started voice channel checking every 15 seconds.");
+        // Check every 10 seconds for more responsive tracking
+        voiceCheckTask.runTaskTimerAsynchronously(plugin, 0L, 200L);
+        plugin.getLogger().info("Started enhanced voice channel monitoring (10-second intervals)");
     }
     
     /**
-     * Check current voice channel status for all linked players
+     * Try to initialize DiscordSRV connection
+     */
+    private void tryInitializeDiscordSRV() {
+        try {
+            if (DiscordSRV.getPlugin() != null && DiscordSRV.getPlugin().getJda() != null) {
+                isEnabled = true;
+                failedAttempts = 0;
+                plugin.getLogger().info("DiscordSRV connection established - voice tracking enabled");
+            } else {
+                failedAttempts++;
+                if (failedAttempts % 12 == 0) { // Log every 2 minutes
+                    plugin.getLogger().warning("Waiting for DiscordSRV to be ready... (attempt " + failedAttempts + ")");
+                }
+            }
+        } catch (Exception e) {
+            failedAttempts++;
+            if (failedAttempts % 12 == 0) {
+                plugin.getLogger().warning("Error connecting to DiscordSRV: " + e.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Enhanced voice channel monitoring with detailed tracking
      */
     private void checkVoiceChannels() {
         try {
             Object jda = DiscordSRV.getPlugin().getJda();
             if (jda == null) {
+                if (failedAttempts < MAX_FAILED_ATTEMPTS) {
+                    failedAttempts++;
+                }
                 return;
             }
+            
+            // Reset failed attempts on successful connection
+            failedAttempts = 0;
             
             // Get all guilds from JDA
             Object guildsCollection = jda.getClass().getMethod("getGuilds").invoke(jda);
             java.util.List<?> guilds = (java.util.List<?>) guildsCollection;
             
-            Set<UUID> playersInVoice = new HashSet<>();
+            Set<UUID> activeVoicePlayers = new HashSet<>();
+            Map<String, Set<UUID>> newChannelMembers = new HashMap<>();
             
             for (Object guild : guilds) {
+                // Get guild information for logging
+                String guildName = (String) guild.getClass().getMethod("getName").invoke(guild);
+                
                 // Get all voice channels in this guild
                 Object voiceChannels = guild.getClass().getMethod("getVoiceChannels").invoke(guild);
                 java.util.List<?> channels = (java.util.List<?>) voiceChannels;
@@ -97,11 +153,7 @@ public class DiscordListener implements Listener {
                     Object membersCollection = channel.getClass().getMethod("getMembers").invoke(channel);
                     java.util.List<?> members = (java.util.List<?>) membersCollection;
                     
-                    // Check minimum members requirement
-                    int minMembers = plugin.getConfigUtil().getMinimumMembers();
-                    if (members.size() < minMembers) {
-                        continue;
-                    }
+                    Set<UUID> channelPlayerUuids = new HashSet<>();
                     
                     // Process each member in the channel
                     for (Object member : members) {
@@ -110,23 +162,47 @@ public class DiscordListener implements Listener {
                         
                         UUID playerUuid = getLinkedPlayerUuid(discordId);
                         if (playerUuid != null) {
-                            playersInVoice.add(playerUuid);
-                            
-                            // Check if player just joined this channel
-                            String previousChannel = currentVoiceChannels.get(playerUuid);
-                            if (!channelId.equals(previousChannel)) {
-                                // Player joined new channel or switched channels
-                                if (previousChannel != null) {
-                                    // Stop tracking previous channel
-                                    plugin.getLogger().info("Player " + memberName + " left previous voice channel");
-                                    timeManager.stopTracking(playerUuid);
-                                }
-                                
-                                // Start tracking new channel
-                                plugin.getLogger().info("Player " + memberName + " joined voice channel: " + channelName);
-                                timeManager.startTracking(playerUuid, channelId);
-                                currentVoiceChannels.put(playerUuid, channelId);
+                            channelPlayerUuids.add(playerUuid);
+                        }
+                    }
+                    
+                    // Check minimum members requirement (only count linked players)
+                    int minMembers = plugin.getConfigUtil().getMinimumMembers();
+                    if (channelPlayerUuids.size() < minMembers) {
+                        // Stop tracking players in this channel if it doesn't meet requirements
+                        for (UUID playerUuid : channelPlayerUuids) {
+                            if (currentVoiceChannels.containsKey(playerUuid) && 
+                                channelId.equals(currentVoiceChannels.get(playerUuid))) {
+                                plugin.getLogger().info("Channel " + channelName + " no longer meets minimum member requirement (" + 
+                                                      channelPlayerUuids.size() + "/" + minMembers + ") - stopping tracking");
+                                timeManager.stopTracking(playerUuid);
+                                currentVoiceChannels.remove(playerUuid);
                             }
+                        }
+                        continue;
+                    }
+                    
+                    // Store channel members for comparison
+                    newChannelMembers.put(channelId, channelPlayerUuids);
+                    activeVoicePlayers.addAll(channelPlayerUuids);
+                    
+                    // Process each linked player in the channel
+                    for (UUID playerUuid : channelPlayerUuids) {
+                        String previousChannel = currentVoiceChannels.get(playerUuid);
+                        
+                        if (!channelId.equals(previousChannel)) {
+                            // Player joined new channel or switched channels
+                            if (previousChannel != null) {
+                                // Stop tracking previous channel
+                                plugin.getLogger().info("Player switched from channel " + previousChannel + " to " + channelName);
+                                timeManager.stopTracking(playerUuid);
+                            } else {
+                                plugin.getLogger().info("Player joined voice channel: " + channelName + " (" + channelPlayerUuids.size() + "/" + members.size() + " linked players)");
+                            }
+                            
+                            // Start tracking new channel
+                            timeManager.startTracking(playerUuid, channelId);
+                            currentVoiceChannels.put(playerUuid, channelId);
                         }
                     }
                 }
@@ -136,9 +212,9 @@ public class DiscordListener implements Listener {
             Set<UUID> playersToRemove = new HashSet<>();
             for (Map.Entry<UUID, String> entry : currentVoiceChannels.entrySet()) {
                 UUID playerUuid = entry.getKey();
-                if (!playersInVoice.contains(playerUuid)) {
+                if (!activeVoicePlayers.contains(playerUuid)) {
                     // Player left voice channel
-                    plugin.getLogger().info("Player left voice channel, stopping tracking");
+                    plugin.getLogger().info("Player left voice channel - stopping tracking");
                     timeManager.stopTracking(playerUuid);
                     playersToRemove.add(playerUuid);
                 }
@@ -149,8 +225,24 @@ public class DiscordListener implements Listener {
                 currentVoiceChannels.remove(playerUuid);
             }
             
+            // Update channel members tracking
+            channelMembers.clear();
+            channelMembers.putAll(newChannelMembers);
+            
+            // Log status every 5 minutes (30 checks at 10-second intervals)
+            if (System.currentTimeMillis() % 300000 < 10000) { // Every 5 minutes
+                int totalTracking = currentVoiceChannels.size();
+                int totalChannels = newChannelMembers.size();
+                if (totalTracking > 0 || totalChannels > 0) {
+                    plugin.getLogger().info("Voice tracking status: " + totalTracking + " players being tracked across " + totalChannels + " eligible channels");
+                }
+            }
+            
         } catch (Exception e) {
-            plugin.getLogger().warning("Error checking voice channels: " + e.getMessage());
+            plugin.getLogger().warning("Error in voice channel monitoring: " + e.getMessage());
+            if (plugin.getServer().getLogger().isLoggable(java.util.logging.Level.FINE)) {
+                e.printStackTrace();
+            }
         }
     }
     

@@ -1,14 +1,21 @@
-# VCTimeRewards Configuration
+# VCTimeRewards Configuration - Enhanced Edition
 
-# Minimum number of members required in a voice channel for time tracking
+# =================================================================
+# DISCORD VOICE CHANNEL TRACKING SETTINGS
+# =================================================================
+
+# Minimum number of LINKED players required in a voice channel for time tracking
+# This prevents tracking in empty or mostly empty channels
 minimum-members: 2
 
 # Whether both Discord and Minecraft user must be online for tracking
+# false = Track time even when player is offline in Minecraft (recommended)
+# true = Only track when player is online in both Discord and Minecraft
 require-both-online: false
 
-# Send notifications to players about their time milestones
-send-notifications: true
-notification-message: "&aYou have spent {time} hours in Discord voice channels!"
+# =================================================================
+# CHANNEL CONFIGURATION
+# =================================================================
 
 # Channel tracking mode: "whitelist" or "blacklist"
 # - whitelist: Only track channels listed in "tracked-channels"
@@ -16,6 +23,7 @@ notification-message: "&aYou have spent {time} hours in Discord voice channels!"
 tracking-mode: "blacklist"
 
 # Channels to track (only used when tracking-mode is "whitelist")
+# To find channel IDs: Right-click channel in Discord → Copy ID (Developer Mode must be enabled)
 tracked-channels:
   - "123456789012345678"  # Replace with your voice channel ID
   - "987654321098765432"  # Add more channel IDs as needed
@@ -25,18 +33,54 @@ blacklisted-channels:
   - "111111111111111111"  # Example: AFK channel
   - "222222222222222222"  # Example: Music bot channel
 
-# Reward commands to execute when players reach certain hour thresholds
-# Format: hours: "command to execute"
-# Available placeholders: {player}, {threshold}
-rewards:
-  1: "give {player} diamond 1"
-  5: "give {player} diamond_block 1"
-  10: "give {player} netherite_ingot 1"
-  25: "give {player} elytra 1"
-  50: "give {player} beacon 1"
-  100: "give {player} dragon_egg 1"
+# =================================================================
+# REWARD SYSTEM
+# =================================================================
 
-# Database settings (if using database storage)
+# Reward commands executed when players reach time thresholds (in hours)
+# Commands are executed from console - use proper permissions
+# Available placeholders: {player} = player name, {threshold} = hours reached
+rewards:
+  1: "give {player} diamond 5"                    # 1 hour: 5 diamonds
+  3: "give {player} diamond_block 2"              # 3 hours: 2 diamond blocks  
+  5: "give {player} netherite_ingot 1"            # 5 hours: 1 netherite ingot
+  10: "give {player} enchanted_golden_apple 3"    # 10 hours: 3 golden apples
+  25: "give {player} elytra 1"                    # 25 hours: elytra
+  50: "give {player} beacon 1"                    # 50 hours: beacon
+  100: "give {player} dragon_egg 1"               # 100 hours: dragon egg
+
+# =================================================================
+# NOTIFICATIONS
+# =================================================================
+
+# Send notifications to players when they reach milestones
+send-notifications: true
+
+# Message sent to players when they reach a milestone
+# Available placeholders: {time} = hours reached
+notification-message: "&6🎉 &aCongratulations! You've spent &e{time} hours &ain Discord voice channels!"
+
+# =================================================================
+# ADVANCED SETTINGS
+# =================================================================
+
+# How often to check Discord voice channels (in seconds)
+# Lower values = more responsive but higher CPU usage
+# Default: 10 seconds (recommended: 5-15 seconds)
+check-interval: 10
+
+# How often to save player data (in minutes)
+# Lower values = less data loss on crashes but more disk I/O
+# Default: 5 minutes (recommended: 2-10 minutes)  
+save-interval: 5
+
+# Enable debug logging for troubleshooting
+debug-mode: false
+
+# =================================================================
+# DATABASE SETTINGS (Optional - uses file storage by default)
+# =================================================================
+
 database:
   enabled: false
   host: "localhost"

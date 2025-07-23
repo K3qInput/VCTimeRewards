@@ -82,7 +82,7 @@ public class ConfigUtil {
     /**
      * Get whether to send notifications to players
      */
-    public boolean isSendNotifications() {
+    public boolean shouldSendNotifications() {
         return config.getBoolean("send-notifications", true);
     }
     

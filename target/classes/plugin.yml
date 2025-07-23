@@ -11,6 +11,10 @@ commands:
     description: Check your voice channel time
     usage: /vctime [player]
     permission: vctime.check
+  vctimeadmin:
+    description: Admin commands for VCTimeRewards
+    usage: /vctimeadmin <status|reload|save|check|reset|list> [args]
+    permission: vctime.admin
     
 permissions:
   vctime.check:

@@ -1,6 +1,7 @@
 package me.kiro.vctime;
 
 import me.kiro.vctime.commands.VCTimeCommand;
+import me.kiro.vctime.commands.VCTimeAdminCommand;
 import me.kiro.vctime.discord.DiscordListener;
 import me.kiro.vctime.managers.TimeManager;
 import me.kiro.vctime.utils.ConfigUtil;
@@ -42,6 +43,7 @@ public class VCTimeRewards extends JavaPlugin {
         
         // Register commands
         getCommand("vctime").setExecutor(new VCTimeCommand(this));
+        getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
         
         getLogger().info("VCTimeRewards plugin enabled successfully!");
     }
@@ -54,9 +56,18 @@ public class VCTimeRewards extends JavaPlugin {
         if (discordListener != null) {
             try {
                 discordListener.stopChecking();
-                getLogger().info("Discord voice channel checking stopped.");
+                getLogger().info("Discord voice channel monitoring stopped.");
             } catch (Exception e) {
                 getLogger().warning("Error during Discord listener cleanup: " + e.getMessage());
+            }
+        }
+        
+        // Clean up TimeManager
+        if (timeManager != null) {
+            try {
+                timeManager.shutdown();
+            } catch (Exception e) {
+                getLogger().warning("Error during TimeManager cleanup: " + e.getMessage());
             }
         }
         
@@ -75,5 +86,13 @@ public class VCTimeRewards extends JavaPlugin {
     
     public ConfigUtil getConfigUtil() {
         return configUtil;
+    }
+    
+    public DiscordListener getDiscordListener() {
+        return discordListener;
+    }
+    
+    public void initializeConfigUtil() {
+        this.configUtil = new ConfigUtil(this);
     }
 }

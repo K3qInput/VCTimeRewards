@@ -4,4 +4,5 @@ me/kiro/vctime/managers/TimeManager$1.class
 me/kiro/vctime/discord/DiscordListener$1.class
 me/kiro/vctime/discord/DiscordListener.class
 me/kiro/vctime/VCTimeRewards.class
+me/kiro/vctime/commands/VCTimeAdminCommand.class
 me/kiro/vctime/commands/VCTimeCommand.class
