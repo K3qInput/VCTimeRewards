@@ -60,11 +60,7 @@ public class DiscordListener implements Listener {
             return false;
         }
         
-        // Check if channel is in blacklist
-        if (plugin.getConfigUtil().isChannelBlacklisted(channelId)) {
-            return false;
-        }
-        
-        return true;
+        // Use the ConfigUtil method that handles both whitelist and blacklist modes
+        return plugin.getConfigUtil().shouldTrackChannel(channelId);
     }
 }

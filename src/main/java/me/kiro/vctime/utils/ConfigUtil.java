@@ -21,11 +21,27 @@ public class ConfigUtil {
     }
     
     /**
-     * Check if a Discord channel is blacklisted
+     * Check if a Discord channel should be tracked based on whitelist/blacklist mode
+     */
+    public boolean shouldTrackChannel(String channelId) {
+        String mode = config.getString("tracking-mode", "blacklist");
+        
+        if ("whitelist".equals(mode)) {
+            // Whitelist mode: only track channels in the tracked-channels list
+            List<String> trackedChannels = config.getStringList("tracked-channels");
+            return trackedChannels.contains(channelId);
+        } else {
+            // Blacklist mode: track all channels except those in blacklisted-channels
+            List<String> blacklistedChannels = config.getStringList("blacklisted-channels");
+            return !blacklistedChannels.contains(channelId);
+        }
+    }
+    
+    /**
+     * Check if a Discord channel is blacklisted (legacy method for backwards compatibility)
      */
     public boolean isChannelBlacklisted(String channelId) {
-        List<String> blacklist = config.getStringList("blacklisted-channels");
-        return blacklist.contains(channelId);
+        return !shouldTrackChannel(channelId);
     }
     
     /**

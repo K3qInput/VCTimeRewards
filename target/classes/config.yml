@@ -10,10 +10,20 @@ require-both-online: false
 send-notifications: true
 notification-message: "&aYou have spent {time} hours in Discord voice channels!"
 
-# Discord channels to exclude from time tracking (by channel ID)
+# Channel tracking mode: "whitelist" or "blacklist"
+# - whitelist: Only track channels listed in "tracked-channels"
+# - blacklist: Track all channels except those in "blacklisted-channels"
+tracking-mode: "blacklist"
+
+# Channels to track (only used when tracking-mode is "whitelist")
+tracked-channels:
+  - "123456789012345678"  # Replace with your voice channel ID
+  - "987654321098765432"  # Add more channel IDs as needed
+
+# Channels to exclude from tracking (only used when tracking-mode is "blacklist")
 blacklisted-channels:
-  - "123456789012345678"  # Example channel ID
-  - "987654321098765432"  # Another example
+  - "111111111111111111"  # Example: AFK channel
+  - "222222222222222222"  # Example: Music bot channel
 
 # Reward commands to execute when players reach certain hour thresholds
 # Format: hours: "command to execute"
