@@ -4,7 +4,7 @@
 
 VCTimeRewards is a Minecraft plugin that tracks voice chat time and provides rewards. The plugin integrates with Discord through DiscordSRV to monitor voice channel activity and reward players based on time spent in voice channels.
 
-**Status: Discord integration implemented and working. Plugin now properly tracks voice channel activity and links with DiscordSRV.**
+**Status: Discord integration completely rewritten with periodic checking system. Fixed ClassNotFoundException and implemented reliable voice channel tracking.**
 
 ## User Preferences
 
@@ -81,14 +81,15 @@ Preferred communication style: Simple, everyday language.
 3. ✓ Removed problematic JDA dependency conflicts
 4. ✓ Created working plugin structure with all components
 5. ✓ Added command system for checking voice channel time
-6. ✓ Implemented JDA event listeners for Discord voice channel activity
+6. ✓ **FIXED: Replaced event-based with periodic checking system (July 23, 2025)**
 7. ✓ Added DiscordSRV account linking integration 
 8. ✓ Created flexible whitelist/blacklist channel configuration
 9. ✓ Built time tracking system with offline player support
 10. ✓ Added proper plugin lifecycle management
+11. ✓ **FIXED: Eliminated JDA ClassNotFoundException with reflection-based approach**
 
 ### Core Features Working
-- **Voice Channel Detection**: Plugin detects when players join/leave/move between Discord voice channels
+- **Voice Channel Detection**: Plugin checks Discord voice channels every 15 seconds for reliable tracking
 - **Account Linking**: Uses DiscordSRV to link Discord users to Minecraft accounts
 - **Time Tracking**: Tracks voice channel time for both online and offline players
 - **Channel Configuration**: Supports both whitelist (specific channels only) and blacklist (all except specific) modes

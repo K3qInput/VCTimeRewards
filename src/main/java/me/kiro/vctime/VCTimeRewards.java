@@ -50,10 +50,11 @@ public class VCTimeRewards extends JavaPlugin {
     public void onDisable() {
         getLogger().info("Disabling VCTimeRewards plugin...");
         
-        // Clean up Discord listener - JDA cleanup handled automatically
+        // Clean up Discord listener
         if (discordListener != null) {
             try {
-                getLogger().info("Discord event listeners cleanup handled automatically by DiscordSRV.");
+                discordListener.stopChecking();
+                getLogger().info("Discord voice channel checking stopped.");
             } catch (Exception e) {
                 getLogger().warning("Error during Discord listener cleanup: " + e.getMessage());
             }
