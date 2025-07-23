@@ -1,0 +1,37 @@
+modules = ["java"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["maven"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Maven Build"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "maven_build"
+
+[[workflows.workflow]]
+name = "Maven Build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mvn clean compile -X"
+
+[[workflows.workflow]]
+name = "maven_build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mvn clean compile"

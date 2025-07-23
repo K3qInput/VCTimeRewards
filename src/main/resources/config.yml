@@ -1,0 +1,36 @@
+# VCTimeRewards Configuration
+
+# Minimum number of members required in a voice channel for time tracking
+minimum-members: 2
+
+# Whether both Discord and Minecraft user must be online for tracking
+require-both-online: false
+
+# Send notifications to players about their time milestones
+send-notifications: true
+notification-message: "&aYou have spent {time} hours in Discord voice channels!"
+
+# Discord channels to exclude from time tracking (by channel ID)
+blacklisted-channels:
+  - "123456789012345678"  # Example channel ID
+  - "987654321098765432"  # Another example
+
+# Reward commands to execute when players reach certain hour thresholds
+# Format: hours: "command to execute"
+# Available placeholders: {player}, {threshold}
+rewards:
+  1: "give {player} diamond 1"
+  5: "give {player} diamond_block 1"
+  10: "give {player} netherite_ingot 1"
+  25: "give {player} elytra 1"
+  50: "give {player} beacon 1"
+  100: "give {player} dragon_egg 1"
+
+# Database settings (if using database storage)
+database:
+  enabled: false
+  host: "localhost"
+  port: 3306
+  database: "vctime"
+  username: "root"
+  password: "password"

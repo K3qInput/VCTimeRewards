@@ -1,0 +1,21 @@
+name: VCTimeRewards
+version: '1.0.0'
+description: A Minecraft plugin that rewards players for time spent in Discord voice channels
+author: Kiro
+main: me.kiro.vctime.VCTimeRewards
+api-version: 1.19
+depend: [DiscordSRV]
+
+commands:
+  vctime:
+    description: Check your voice channel time
+    usage: /vctime [player]
+    permission: vctime.check
+    
+permissions:
+  vctime.check:
+    description: Allows checking voice channel time
+    default: true
+  vctime.admin:
+    description: Allows administrative commands
+    default: op
