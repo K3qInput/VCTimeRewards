@@ -1,0 +1,46 @@
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project VCTimeRewards: Compilation failure: Compilation failure:
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[5,43] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceJoinEvent
+[ERROR]   location: package github.scarsz.discordsrv.api.events
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[6,43] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceLeaveEvent
+[ERROR]   location: package github.scarsz.discordsrv.api.events
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[7,43] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceMoveEvent
+[ERROR]   location: package github.scarsz.discordsrv.api.events
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[12,36] package net.dv8tion.jda.api.entities does not exist
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[13,53] package net.dv8tion.jda.api.entities.channel.concrete does not exist
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[39,29] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceJoinEvent
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[46,29] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceMoveEvent
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[61,30] cannot find symbol
+[ERROR]   symbol:   class DiscordGuildVoiceLeaveEvent
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[67,34] cannot find symbol
+[ERROR]   symbol:   class Member
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[67,49] cannot find symbol
+[ERROR]   symbol:   class VoiceChannel
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[108,35] cannot find symbol
+[ERROR]   symbol:   class Member
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[108,50] cannot find symbol
+[ERROR]   symbol:   class VoiceChannel
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[132,38] cannot find symbol
+[ERROR]   symbol:   class VoiceChannel
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] /C:/Users/leeyo/Downloads/VCTimeRewards/project/src/main/java/me/kiro/vctime/discord/DiscordListener.java:[139,38] cannot find symbol
+[ERROR]   symbol:   class Member
+[ERROR]   location: class me.kiro.vctime.discord.DiscordListener
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
