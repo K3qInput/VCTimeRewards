@@ -53,8 +53,25 @@ public class VCTimeRewards extends JavaPlugin {
         performanceMonitor = errorHandler.handleException("PerformanceMonitor_Init", 
                 () -> new PerformanceMonitor(this), null).orElse(null);
         
-        // Warm up cache for better performance
-        dataManager.warmUpCache();
+        // Validate critical managers initialization
+        if (timeManager == null) {
+            enhancedLogger.error("STARTUP", "Failed to initialize TimeManager - disabling plugin");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        
+        if (chatManager == null) {
+            enhancedLogger.error("STARTUP", "Failed to initialize ChatManager - disabling plugin");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        
+        // Warm up cache for better performance (only if dataManager initialized)
+        if (dataManager != null) {
+            dataManager.warmUpCache();
+        } else {
+            enhancedLogger.warn("STARTUP", "DataManager failed to initialize - running without optimization features");
+        }
         
         // Wait for DiscordSRV to be ready
         if (getServer().getPluginManager().getPlugin("DiscordSRV") == null) {
@@ -190,6 +207,15 @@ public class VCTimeRewards extends JavaPlugin {
     
     public DiscordListener getDiscordListener() {
         return discordListener;
+    }
+    
+    /**
+     * Helper method to initialize ConfigUtil safely
+     */
+    public void initializeConfigUtil() {
+        if (configUtil != null) {
+            configUtil = new ConfigUtil(this);
+        }
     }
     
     public void initializeConfigUtil() {

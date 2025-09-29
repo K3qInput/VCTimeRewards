@@ -34,17 +34,15 @@ public class LeaderboardCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Handle async to prevent blocking
-        CompletableFuture.runAsync(() -> {
-            try {
-                handleLeaderboardCommand(sender, args);
-            } catch (Exception e) {
-                plugin.getErrorHandler().handleException("LeaderboardCommand", e, () -> {
-                    sender.sendMessage(ChatColor.RED + "An error occurred while loading the leaderboard.");
-                    return null;
-                });
-            }
-        });
+        // Execute on main thread to ensure thread safety
+        try {
+            handleLeaderboardCommand(sender, args);
+        } catch (Exception e) {
+            plugin.getErrorHandler().handleException("LeaderboardCommand", e, () -> {
+                sender.sendMessage(ChatColor.RED + "An error occurred while loading the leaderboard.");
+                return null;
+            });
+        }
         
         return true;
     }
@@ -85,16 +83,42 @@ public class LeaderboardCommand implements CommandExecutor {
      */
     private void showVoiceTimeLeaderboard(CommandSender sender, boolean isGui) {
         if (isGui && sender instanceof Player) {
+            // Fetch data async, then display on main thread
             plugin.getDataManager().getLeaderboardAsync(45).thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showVoiceTimeGui((Player) sender, leaderboard);
+                    try {
+                        showVoiceTimeGui((Player) sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("LeaderboardGUI", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying leaderboard GUI.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load leaderboard data.");
+                });
+                return null;
             });
         } else {
+            // Fetch data async, then display on main thread
             plugin.getDataManager().getLeaderboardAsync(10).thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showVoiceTimeText(sender, leaderboard);
+                    try {
+                        showVoiceTimeText(sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("LeaderboardText", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying leaderboard.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load leaderboard data.");
+                });
+                return null;
             });
         }
     }
@@ -103,20 +127,44 @@ public class LeaderboardCommand implements CommandExecutor {
      * Show chat message leaderboard
      */
     private void showChatLeaderboard(CommandSender sender, boolean isGui) {
-        // Get top chat participants
+        // Get top chat participants async, then display on main thread
         CompletableFuture<List<ChatLeaderEntry>> chatLeaderboard = getChatLeaderboard(10);
         
         if (isGui && sender instanceof Player) {
             chatLeaderboard.thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showChatGui((Player) sender, leaderboard);
+                    try {
+                        showChatGui((Player) sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("ChatLeaderboardGUI", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying chat leaderboard GUI.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load chat leaderboard data.");
+                });
+                return null;
             });
         } else {
             chatLeaderboard.thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showChatText(sender, leaderboard);
+                    try {
+                        showChatText(sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("ChatLeaderboardText", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying chat leaderboard.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load chat leaderboard data.");
+                });
+                return null;
             });
         }
     }
@@ -130,14 +178,38 @@ public class LeaderboardCommand implements CommandExecutor {
         if (isGui && sender instanceof Player) {
             combinedLeaderboard.thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showCombinedGui((Player) sender, leaderboard);
+                    try {
+                        showCombinedGui((Player) sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("CombinedLeaderboardGUI", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying combined leaderboard GUI.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load combined leaderboard data.");
+                });
+                return null;
             });
         } else {
             combinedLeaderboard.thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    showCombinedText(sender, leaderboard);
+                    try {
+                        showCombinedText(sender, leaderboard);
+                    } catch (Exception e) {
+                        plugin.getErrorHandler().handleException("CombinedLeaderboardText", e, () -> {
+                            sender.sendMessage(ChatColor.RED + "Error displaying combined leaderboard.");
+                            return null;
+                        });
+                    }
                 });
+            }).exceptionally(throwable -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage(ChatColor.RED + "Failed to load combined leaderboard data.");
+                });
+                return null;
             });
         }
     }
