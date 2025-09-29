@@ -2,6 +2,7 @@ package me.kiro.vctime.managers;
 
 import me.kiro.vctime.VCTimeRewards;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,6 +16,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Enhanced time tracking manager with comprehensive persistence and reward handling
@@ -487,6 +491,116 @@ public class TimeManager {
      */
     public Set<UUID> getTrackedPlayers() {
         return new HashSet<>(playerStartTimes.keySet());
+    }
+    
+    /**
+     * Get current session time for a player (in minutes)
+     */
+    public long getSessionTime(UUID playerId) {
+        if (!playerStartTimes.containsKey(playerId)) {
+            return 0;
+        }
+        
+        long startTime = playerStartTimes.get(playerId);
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - startTime) / (1000 * 60); // Convert to minutes
+    }
+    
+    /**
+     * Check if player is currently in a tracked voice channel
+     */
+    public boolean isPlayerInTrackedVoiceChannel(UUID playerId) {
+        return playerStartTimes.containsKey(playerId);
+    }
+    
+    /**
+     * Get player's rank based on total time (1 = highest time)
+     */
+    public int getPlayerRank(UUID playerId) {
+        if (!totalTimes.containsKey(playerId)) {
+            return -1; // Player not found
+        }
+        
+        long playerTime = totalTimes.get(playerId);
+        int rank = 1;
+        
+        for (long otherTime : totalTimes.values()) {
+            if (otherTime > playerTime) {
+                rank++;
+            }
+        }
+        
+        return rank;
+    }
+    
+    /**
+     * Get top players by voice time
+     */
+    public List<PlayerTimeEntry> getTopPlayers(int limit) {
+        return totalTimes.entrySet().stream()
+                .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+                .limit(limit)
+                .map(entry -> new PlayerTimeEntry(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get average session time for a player (in minutes)
+     */
+    public long getAverageSessionTime(UUID playerId) {
+        // For now, return a simple calculation
+        // In a full implementation, you'd track all session durations
+        long totalTime = getTotalTime(playerId);
+        int sessionCount = getSessionCount(playerId);
+        
+        if (sessionCount == 0) {
+            return 0;
+        }
+        
+        return totalTime / sessionCount;
+    }
+    
+    /**
+     * Get total number of sessions for a player
+     */
+    public int getSessionCount(UUID playerId) {
+        // For now, estimate based on total time
+        // In a full implementation, you'd track actual session count
+        long totalTime = getTotalTime(playerId);
+        
+        if (totalTime == 0) {
+            return 0;
+        }
+        
+        // Estimate: assume average session is 30 minutes
+        int estimatedSessions = (int) Math.max(1, totalTime / 30);
+        return estimatedSessions;
+    }
+    
+    /**
+     * Inner class for leaderboard entries
+     */
+    public static class PlayerTimeEntry {
+        private final UUID playerId;
+        private final long totalTime;
+        
+        public PlayerTimeEntry(UUID playerId, long totalTime) {
+            this.playerId = playerId;
+            this.totalTime = totalTime;
+        }
+        
+        public UUID getPlayerId() {
+            return playerId;
+        }
+        
+        public long getTotalTime() {
+            return totalTime;
+        }
+        
+        public String getPlayerName() {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(playerId);
+            return player.getName() != null ? player.getName() : "Unknown";
+        }
     }
     
     /**

@@ -5,6 +5,7 @@ import me.kiro.vctime.commands.VCTimeAdminCommand;
 import me.kiro.vctime.discord.DiscordListener;
 import me.kiro.vctime.managers.ChatManager;
 import me.kiro.vctime.managers.TimeManager;
+import me.kiro.vctime.placeholders.VCTimeExpansion;
 import me.kiro.vctime.utils.ConfigUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -19,6 +20,7 @@ public class VCTimeRewards extends JavaPlugin {
     private ChatManager chatManager;
     private ConfigUtil configUtil;
     private DiscordListener discordListener;
+    private VCTimeExpansion placeholderExpansion;
     
     @Override
     public void onEnable() {
@@ -47,6 +49,15 @@ public class VCTimeRewards extends JavaPlugin {
         // Register commands
         getCommand("vctime").setExecutor(new VCTimeCommand(this));
         getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
+        
+        // Register PlaceholderAPI expansion
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            placeholderExpansion = new VCTimeExpansion(this);
+            placeholderExpansion.register();
+            getLogger().info("PlaceholderAPI integration enabled!");
+        } else {
+            getLogger().info("PlaceholderAPI not found - placeholders will not be available");
+        }
         
         getLogger().info("VCTimeRewards plugin enabled successfully!");
     }

@@ -5,6 +5,7 @@ author: Kiro
 main: me.kiro.vctime.VCTimeRewards
 api-version: 1.19
 depend: [DiscordSRV]
+softdepend: [PlaceholderAPI]
 
 commands:
   vctime:

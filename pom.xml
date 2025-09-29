@@ -36,6 +36,12 @@
             <id>central</id>
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
+        
+        <!-- PlaceholderAPI -->
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -55,6 +61,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- PlaceholderAPI -->
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.3</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
