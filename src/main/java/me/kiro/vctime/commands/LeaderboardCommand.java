@@ -39,7 +39,7 @@ public class LeaderboardCommand implements CommandExecutor {
             handleLeaderboardCommand(sender, args);
         } catch (Exception e) {
             plugin.getErrorHandler().handleException("LeaderboardCommand", e, () -> {
-                sender.sendMessage(ChatColor.RED + "An error occurred while loading the leaderboard.");
+                sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cAn error occurred while loading the leaderboard."));
                 return null;
             });
         }
@@ -90,14 +90,14 @@ public class LeaderboardCommand implements CommandExecutor {
                         showVoiceTimeGui((Player) sender, leaderboard);
                     } catch (Exception e) {
                         plugin.getErrorHandler().handleException("LeaderboardGUI", e, () -> {
-                            sender.sendMessage(ChatColor.RED + "Error displaying leaderboard GUI.");
+                            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cError displaying leaderboard GUI."));
                             return null;
                         });
                     }
                 });
             }).exceptionally(throwable -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage(ChatColor.RED + "Failed to load leaderboard data.");
+                    sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cFailed to load leaderboard data."));
                 });
                 return null;
             });
@@ -116,7 +116,7 @@ public class LeaderboardCommand implements CommandExecutor {
                 });
             }).exceptionally(throwable -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage(ChatColor.RED + "Failed to load leaderboard data.");
+                    sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cFailed to load leaderboard data."));
                 });
                 return null;
             });
@@ -218,12 +218,12 @@ public class LeaderboardCommand implements CommandExecutor {
      * Show voice time leaderboard in text format
      */
     private void showVoiceTimeText(CommandSender sender, List<PlayerTimeEntry> leaderboard) {
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.YELLOW + "🎤 " + ChatColor.GOLD + ChatColor.BOLD + "VOICE TIME LEADERBOARD");
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e🎤 &6&lVOICE TIME LEADERBOARD"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
         
         if (leaderboard.isEmpty()) {
-            sender.sendMessage(ChatColor.GRAY + "No data available yet.");
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&7No data available yet."));
             return;
         }
         
@@ -232,18 +232,14 @@ public class LeaderboardCommand implements CommandExecutor {
             String position = getPositionFormat(i + 1);
             String timeFormatted = TimeFormatter.formatTime(entry.getTotalTime());
             
-            sender.sendMessage(String.format("%s %s%s %s- %s%s",
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("%s &f%s &7- &a%s",
                     position,
-                    ChatColor.WHITE,
                     entry.getPlayerName(),
-                    ChatColor.GRAY,
-                    ChatColor.GREEN,
-                    timeFormatted));
+                    timeFormatted)));
         }
         
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/leaderboard voice gui" + 
-                         ChatColor.GRAY + " for interactive view");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&7Use &e/leaderboard voice gui &7for interactive view"));
     }
     
     /**
@@ -284,12 +280,12 @@ public class LeaderboardCommand implements CommandExecutor {
      * Show chat leaderboard in text format
      */
     private void showChatText(CommandSender sender, List<ChatLeaderEntry> leaderboard) {
-        sender.sendMessage(ChatColor.BLUE + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.AQUA + "💬 " + ChatColor.BLUE + ChatColor.BOLD + "CHAT MESSAGES LEADERBOARD");
-        sender.sendMessage(ChatColor.BLUE + "═══════════════════════════════════");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&9═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&b💬 &9&lCHAT MESSAGES LEADERBOARD"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&9═══════════════════════════════════"));
         
         if (leaderboard.isEmpty()) {
-            sender.sendMessage(ChatColor.GRAY + "No data available yet.");
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&7No data available yet."));
             return;
         }
         
@@ -297,28 +293,25 @@ public class LeaderboardCommand implements CommandExecutor {
             ChatLeaderEntry entry = leaderboard.get(i);
             String position = getPositionFormat(i + 1);
             
-            sender.sendMessage(String.format("%s %s%s %s- %s%s messages",
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("%s &f%s &7- &b%s messages",
                     position,
-                    ChatColor.WHITE,
                     entry.playerName,
-                    ChatColor.GRAY,
-                    ChatColor.AQUA,
-                    formatNumber(entry.messageCount)));
+                    formatNumber(entry.messageCount))));
         }
         
-        sender.sendMessage(ChatColor.BLUE + "═══════════════════════════════════");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&9═══════════════════════════════════"));
     }
     
     /**
      * Show combined leaderboard in text format
      */
     private void showCombinedText(CommandSender sender, List<CombinedLeaderEntry> leaderboard) {
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + "⭐ " + ChatColor.BOLD + "COMBINED SCORE LEADERBOARD");
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + "═══════════════════════════════════");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&d═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&d⭐ &lCOMBINED SCORE LEADERBOARD"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&d═══════════════════════════════════"));
         
         if (leaderboard.isEmpty()) {
-            sender.sendMessage(ChatColor.GRAY + "No data available yet.");
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&7No data available yet."));
             return;
         }
         
@@ -326,21 +319,17 @@ public class LeaderboardCommand implements CommandExecutor {
             CombinedLeaderEntry entry = leaderboard.get(i);
             String position = getPositionFormat(i + 1);
             
-            sender.sendMessage(String.format("%s %s%s %s- %s%s points",
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("%s &f%s &7- &d%s points",
                     position,
-                    ChatColor.WHITE,
                     entry.playerName,
-                    ChatColor.GRAY,
-                    ChatColor.LIGHT_PURPLE,
-                    formatNumber(entry.combinedScore)));
+                    formatNumber(entry.combinedScore))));
             
-            sender.sendMessage(ChatColor.GRAY + "   Voice: " + ChatColor.GREEN + 
-                             TimeFormatter.formatTime(entry.voiceTime) + 
-                             ChatColor.GRAY + " | Messages: " + ChatColor.AQUA + 
-                             formatNumber(entry.messageCount));
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("   &7Voice: &a%s &7| Messages: &b%s",
+                             TimeFormatter.formatTime(entry.voiceTime),
+                             formatNumber(entry.messageCount))));
         }
         
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + "═══════════════════════════════════");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&d═══════════════════════════════════"));
     }
     
     /**
@@ -361,37 +350,31 @@ public class LeaderboardCommand implements CommandExecutor {
      */
     private void announceTopPlayers(CommandSender sender, List<PlayerTimeEntry> voiceTop, List<ChatLeaderEntry> chatTop) {
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.GOLD + "🏆 " + ChatColor.YELLOW + ChatColor.BOLD + "TOP PERFORMERS" + ChatColor.GOLD + " 🏆");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6🏆 &e&lTOP PERFORMERS &6🏆"));
         sender.sendMessage("");
         
         // Voice time top 3
-        sender.sendMessage(ChatColor.YELLOW + "🎤 Voice Time Champions:");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e🎤 Voice Time Champions:"));
         for (int i = 0; i < Math.min(3, voiceTop.size()); i++) {
             PlayerTimeEntry entry = voiceTop.get(i);
             String medal = getMedal(i + 1);
-            sender.sendMessage(String.format("  %s %s%s %s- %s%s",
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("  %s &f%s &7- &a%s",
                     medal,
-                    ChatColor.WHITE,
                     entry.getPlayerName(),
-                    ChatColor.GRAY,
-                    ChatColor.GREEN,
-                    TimeFormatter.formatTime(entry.getTotalTime())));
+                    TimeFormatter.formatTime(entry.getTotalTime()))));
         }
         
         sender.sendMessage("");
         
         // Chat messages top 3
-        sender.sendMessage(ChatColor.AQUA + "💬 Chat Champions:");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&b💬 Chat Champions:"));
         for (int i = 0; i < Math.min(3, chatTop.size()); i++) {
             ChatLeaderEntry entry = chatTop.get(i);
             String medal = getMedal(i + 1);
-            sender.sendMessage(String.format("  %s %s%s %s- %s%s messages",
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("  %s &f%s &7- &b%s messages",
                     medal,
-                    ChatColor.WHITE,
                     entry.playerName,
-                    ChatColor.GRAY,
-                    ChatColor.AQUA,
-                    formatNumber(entry.messageCount)));
+                    formatNumber(entry.messageCount))));
         }
         
         sender.sendMessage("");
@@ -432,15 +415,15 @@ public class LeaderboardCommand implements CommandExecutor {
      * Show leaderboard command help
      */
     private void showLeaderboardHelp(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.YELLOW + "📊 " + ChatColor.GOLD + ChatColor.BOLD + "LEADERBOARD COMMANDS");
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.YELLOW + "/leaderboard voice [gui]" + ChatColor.GRAY + " - Voice time rankings");
-        sender.sendMessage(ChatColor.YELLOW + "/leaderboard chat [gui]" + ChatColor.GRAY + " - Chat message rankings");
-        sender.sendMessage(ChatColor.YELLOW + "/leaderboard combined [gui]" + ChatColor.GRAY + " - Combined score rankings");
-        sender.sendMessage(ChatColor.YELLOW + "/leaderboard top" + ChatColor.GRAY + " - Announce top performers");
-        sender.sendMessage(ChatColor.GOLD + "═══════════════════════════════════");
-        sender.sendMessage(ChatColor.GRAY + "Add 'gui' for interactive leaderboard!");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e📊 &6&lLEADERBOARD COMMANDS"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/leaderboard voice [gui] &7- Voice time rankings"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/leaderboard chat [gui] &7- Chat message rankings"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/leaderboard combined [gui] &7- Combined score rankings"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/leaderboard top &7- Announce top performers"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6═══════════════════════════════════"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&7Add 'gui' for interactive leaderboard!"));
     }
     
     /**

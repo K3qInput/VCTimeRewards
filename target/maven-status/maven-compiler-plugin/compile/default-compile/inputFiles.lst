@@ -6,8 +6,8 @@
 /home/runner/workspace/src/main/java/me/kiro/vctime/placeholders/VCTimeExpansion.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/utils/EnhancedLogger.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/utils/ColorUtil.java
-/home/runner/workspace/src/main/java/me/kiro/vctime/commands/LeaderboardCommand.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/commands/VCTimeCommand.java
+/home/runner/workspace/src/main/java/me/kiro/vctime/commands/LeaderboardCommand.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/managers/ChatManager.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/discord/DiscordListener.java
 /home/runner/workspace/src/main/java/me/kiro/vctime/utils/PerformanceMonitor.java
