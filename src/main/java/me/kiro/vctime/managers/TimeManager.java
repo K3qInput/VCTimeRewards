@@ -83,6 +83,11 @@ public class TimeManager {
         playerStartTimes.put(playerId, currentTime);
         playerChannels.put(playerId, channelId);
         
+        // Record session start in statistics manager
+        if (plugin.getStatisticsManager() != null) {
+            plugin.getStatisticsManager().recordVoiceSessionStart(playerId, channelId);
+        }
+        
         // Initialize total time if not exists
         if (!totalTimes.containsKey(playerId)) {
             totalTimes.put(playerId, 0L);

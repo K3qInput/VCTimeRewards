@@ -1,8 +1,79 @@
-# VCTimeRewards Configuration - Enhanced Edition
-
-# =================================================================
+# ==================================================================================
+# VCTimeRewards Configuration - Professional Edition
+# ==================================================================================
+# 
+# Available PlaceholderAPI Placeholders (use in scoreboards, holograms, etc.):
+# 
+# 🎤 VOICE TIME PLACEHOLDERS:
+#   %vctime_total%                    - Total voice time (e.g., "5h 30m")
+#   %vctime_total_formatted%          - Formatted total time (e.g., "5 hours, 30 minutes")
+#   %vctime_total_seconds%            - Total seconds (raw number)
+#   %vctime_total_minutes%            - Total minutes (raw number)
+#   %vctime_total_hours%              - Total hours (raw number)
+#   %vctime_session%                  - Current session time
+#   %vctime_session_formatted%        - Current session formatted
+#   %vctime_today%                    - Time spent today
+#   %vctime_today_formatted%          - Today's time formatted
+#   %vctime_yesterday%                - Time spent yesterday
+#   %vctime_this_week%               - Time spent this week
+#   %vctime_this_month%              - Time spent this month
+#   
+# 📊 STATUS & ACTIVITY PLACEHOLDERS:
+#   %vctime_status%                   - Current status (In Voice, Offline, etc.)
+#   %vctime_channel%                  - Current voice channel name
+#   %vctime_channel_members%          - Current channel member count
+#   %vctime_last_seen%               - Last seen timestamp
+#   %vctime_is_online%               - true/false if player is in voice
+#   %vctime_is_tracking%             - true/false if currently being tracked
+#   
+# 🏆 RANKING PLACEHOLDERS:
+#   %vctime_rank%                     - Player's voice time rank (e.g., "#3")
+#   %vctime_rank_suffix%              - Rank with suffix (e.g., "3rd")
+#   %vctime_top_1_name%              - Name of #1 ranked player
+#   %vctime_top_1_time%              - Time of #1 ranked player
+#   %vctime_top_2_name%              - Name of #2 ranked player
+#   %vctime_top_2_time%              - Time of #2 ranked player
+#   %vctime_top_3_name%              - Name of #3 ranked player
+#   %vctime_top_3_time%              - Time of #3 ranked player
+#   %vctime_top_10_list%             - Formatted top 10 list
+#   
+# 📈 PROGRESS & GOALS PLACEHOLDERS:
+#   %vctime_progress_1h%             - Progress to next hour (e.g., "45%")
+#   %vctime_progress_10h%            - Progress to 10 hours
+#   %vctime_progress_100h%           - Progress to 100 hours
+#   %vctime_progress_bar_1h%         - Progress bar to next hour ████▓▓▓▓▓▓
+#   %vctime_progress_bar_10h%        - Progress bar to 10 hours
+#   %vctime_until_next_hour%         - Time until next hour milestone
+#   %vctime_until_next_reward%       - Time until next reward
+#   %vctime_next_reward_time%        - Next reward milestone time
+#   %vctime_next_reward_desc%        - Next reward description
+#   
+# 💬 CHAT & ACTIVITY PLACEHOLDERS:
+#   %vctime_messages%                - Total Discord messages sent
+#   %vctime_messages_today%          - Messages sent today
+#   %vctime_messages_rank%           - Chat ranking position
+#   %vctime_combined_score%          - Combined voice + chat score
+#   %vctime_combined_rank%           - Combined ranking position
+#   
+# 📊 STATISTICS PLACEHOLDERS:
+#   %vctime_sessions_today%          - Number of voice sessions today
+#   %vctime_sessions_total%          - Total voice sessions
+#   %vctime_average_session%         - Average session length
+#   %vctime_longest_session%         - Longest single session
+#   %vctime_shortest_session%        - Shortest session
+#   %vctime_best_day%               - Best day (most time)
+#   %vctime_streak_days%            - Current daily streak
+#   %vctime_first_join%             - First time joining voice
+#   
+# 🎯 MILESTONE PLACEHOLDERS:
+#   %vctime_milestones_reached%      - Number of milestones reached
+#   %vctime_rewards_claimed%         - Number of rewards claimed
+#   %vctime_last_reward%            - Last reward received
+#   %vctime_last_reward_time%       - When last reward was received
+#   
+# ==================================================================================
 # DISCORD VOICE CHANNEL TRACKING SETTINGS
-# =================================================================
+# ==================================================================================
 
 # Minimum number of LINKED players required in a voice channel for time tracking
 # This prevents tracking in empty or mostly empty channels

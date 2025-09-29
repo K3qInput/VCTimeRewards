@@ -75,15 +75,27 @@ public class DiscordListener implements Listener {
                 return;
             }
             
+            // Skip if chat rewards are disabled
+            if (!plugin.getConfigUtil().isChatRewardsEnabled()) {
+                return;
+            }
+            
             // Get Discord user ID
             String discordUserId = event.getAuthor().getId();
             String messageContent = event.getMessage().getContentDisplay();
             
-            // Handle the message for chat rewards
+            // Skip empty messages
+            if (messageContent == null || messageContent.trim().isEmpty()) {
+                return;
+            }
+            
+            // Handle the message for chat rewards with enhanced logging
             handleDiscordMessage(discordUserId, messageContent);
+            plugin.getLogger().fine("✓ Discord message processed from user: " + discordUserId + " (content: " + messageContent.substring(0, Math.min(50, messageContent.length())) + ")");
             
         } catch (Exception e) {
             plugin.getLogger().warning("Error processing Discord message event: " + e.getMessage());
+            plugin.getErrorHandler().handleException("DiscordMessage", e, () -> null);
         }
     }
     
@@ -416,7 +428,7 @@ public class DiscordListener implements Listener {
     }
     
     /**
-     * Handle Discord message events for chat rewards
+     * Handle Discord message events for chat rewards with enhanced tracking
      */
     public void handleDiscordMessage(String discordUserId, String messageContent) {
         try {
@@ -426,10 +438,33 @@ public class DiscordListener implements Listener {
             if (minecraftUUID != null) {
                 // Handle the message for chat rewards
                 chatManager.handleMessage(minecraftUUID);
-                plugin.getLogger().fine("Processed Discord message from linked player: " + minecraftUUID);
+                
+                // Record in statistics manager
+                if (plugin.getStatisticsManager() != null) {
+                    plugin.getStatisticsManager().recordDiscordMessage(minecraftUUID);
+                }
+                
+                // Check achievements
+                if (plugin.getAchievementManager() != null && plugin.getStatisticsManager() != null) {
+                    plugin.getAchievementManager().checkAchievements(minecraftUUID, 
+                        plugin.getStatisticsManager().getStats(minecraftUUID));
+                }
+                
+                plugin.getLogger().fine("✓ CHAT TRACKING: Processed Discord message from linked player: " + minecraftUUID);
+                
+                // Log for debugging if debug mode is enabled
+                if (plugin.getConfig().getBoolean("debug-mode", false)) {
+                    plugin.getLogger().info("DEBUG: Discord message tracked - User: " + discordUserId + " → UUID: " + minecraftUUID + " → Message: " + messageContent.substring(0, Math.min(100, messageContent.length())));
+                }
+            } else {
+                // Log unlinked messages in debug mode
+                if (plugin.getConfig().getBoolean("debug-mode", false)) {
+                    plugin.getLogger().fine("DEBUG: Discord message from unlinked user: " + discordUserId);
+                }
             }
         } catch (Exception e) {
             plugin.getLogger().warning("Error handling Discord message: " + e.getMessage());
+            plugin.getErrorHandler().handleException("DiscordMessageHandler", e, () -> null);
         }
     }
     

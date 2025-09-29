@@ -84,7 +84,13 @@ public class LeaderboardCommand implements CommandExecutor {
      */
     private void showVoiceTimeLeaderboard(CommandSender sender, boolean isGui) {
         if (isGui && sender instanceof Player) {
-            // Fetch data async, then display on main thread
+            // Use modern GUI system if available
+            if (plugin.getModernLeaderboardGUI() != null) {
+                plugin.getModernLeaderboardGUI().openVoiceLeaderboard((Player) sender, 1);
+                return;
+            }
+            
+            // Fallback to old GUI system
             plugin.getDataManager().getLeaderboardAsync(45).thenAccept(leaderboard -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     try {

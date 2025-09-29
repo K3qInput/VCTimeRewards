@@ -12,9 +12,11 @@ import org.bukkit.entity.Player;
 public class VCTimeCommand implements CommandExecutor {
     
     private final VCTimeRewards plugin;
+    private final me.kiro.vctime.commands.HelpMenuCommand helpCommand;
     
-    public VCTimeCommand(VCTimeRewards plugin) {
+    public VCTimeCommand(VCTimeRewards plugin, me.kiro.vctime.commands.HelpMenuCommand helpCommand) {
         this.plugin = plugin;
+        this.helpCommand = helpCommand;
     }
     
     @Override
@@ -25,6 +27,17 @@ public class VCTimeCommand implements CommandExecutor {
         }
         
         Player player = (Player) sender;
+        
+        // Check for help command
+        if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
+            // Use singleton help command to prevent memory leaks
+            if (helpCommand != null) {
+                helpCommand.onCommand(sender, command, label, new String[0]);
+            } else {
+                player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cHelp system is not available."));
+            }
+            return true;
+        }
         
         // Check if player has permission
         if (!player.hasPermission("vctime.check")) {

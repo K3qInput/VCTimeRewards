@@ -140,6 +140,12 @@ public class ChatManager {
                 // Give reward
                 giveChatReward(playerId, command, threshold);
                 markChatRewardReceived(playerId, threshold);
+                
+                // Record reward in statistics
+                if (plugin.getStatisticsManager() != null) {
+                    plugin.getStatisticsManager().recordReward(playerId, "chat", threshold + " messages");
+                }
+                
                 plugin.getLogger().info("CHAT REWARD: Player " + playerId + " reached " + threshold + " messages!");
             }
         }

@@ -30,6 +30,10 @@ public class VCTimeRewards extends JavaPlugin {
     private ConfigUtil configUtil;
     private DiscordListener discordListener;
     private VCTimeExpansion placeholderExpansion;
+    private me.kiro.vctime.managers.StatisticsManager statisticsManager;
+    private me.kiro.vctime.managers.AchievementManager achievementManager;
+    private me.kiro.vctime.guis.ModernLeaderboardGUI modernLeaderboardGUI;
+    private me.kiro.vctime.guis.StatisticsGUI statisticsGUI;
     
     @Override
     public void onEnable() {
@@ -66,6 +70,16 @@ public class VCTimeRewards extends JavaPlugin {
             return;
         }
         
+        // Initialize advanced managers
+        statisticsManager = errorHandler.handleException("StatisticsManager_Init", 
+                () -> new me.kiro.vctime.managers.StatisticsManager(this), null).orElse(null);
+        achievementManager = errorHandler.handleException("AchievementManager_Init", 
+                () -> new me.kiro.vctime.managers.AchievementManager(this), null).orElse(null);
+        modernLeaderboardGUI = errorHandler.handleException("ModernLeaderboardGUI_Init", 
+                () -> new me.kiro.vctime.guis.ModernLeaderboardGUI(this), null).orElse(null);
+        statisticsGUI = errorHandler.handleException("StatisticsGUI_Init", 
+                () -> new me.kiro.vctime.guis.StatisticsGUI(this), null).orElse(null);
+        
         // Warm up cache for better performance (only if dataManager initialized)
         if (dataManager != null) {
             dataManager.warmUpCache();
@@ -96,6 +110,12 @@ public class VCTimeRewards extends JavaPlugin {
         getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
         
+        // Register help menu command as singleton to prevent memory leaks
+        me.kiro.vctime.commands.HelpMenuCommand helpCommand = new me.kiro.vctime.commands.HelpMenuCommand(this);
+        
+        // Update VCTimeCommand to use the help system properly
+        getCommand("vctime").setExecutor(new VCTimeCommand(this, helpCommand));
+        
         // Register PlaceholderAPI expansion
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             placeholderExpansion = errorHandler.handleException("PlaceholderAPI_Init", 
@@ -111,6 +131,14 @@ public class VCTimeRewards extends JavaPlugin {
         }
         
         enhancedLogger.info("STARTUP", "VCTimeRewards plugin enabled successfully!");
+        enhancedLogger.info("STARTUP", "✨ PROFESSIONAL EDITION FEATURES ENABLED:");
+        enhancedLogger.info("STARTUP", "  🎤 Advanced Voice Tracking");
+        enhancedLogger.info("STARTUP", "  💬 Discord Message Rewards");
+        enhancedLogger.info("STARTUP", "  📊 Professional Modern GUIs");
+        enhancedLogger.info("STARTUP", "  🏆 Achievement System");
+        enhancedLogger.info("STARTUP", "  📈 Advanced Statistics");
+        enhancedLogger.info("STARTUP", "  📖 Interactive Help System");
+        enhancedLogger.info("STARTUP", "  ⚡ Performance Optimization");
         enhancedLogger.info("STARTUP", "All systems operational - World-class Discord voice rewards plugin ready!");
     }
     
@@ -165,6 +193,16 @@ public class VCTimeRewards extends JavaPlugin {
             }
         }
         
+        // Save statistics and achievements data before shutdown
+        if (statisticsManager != null) {
+            try {
+                statisticsManager.saveData();
+                getLogger().info("StatisticsManager data saved.");
+            } catch (Exception e) {
+                getLogger().warning("Error during StatisticsManager shutdown: " + e.getMessage());
+            }
+        }
+        
         if (enhancedLogger != null) {
             try {
                 enhancedLogger.info("SHUTDOWN", "VCTimeRewards plugin shutdown complete!");
@@ -214,5 +252,21 @@ public class VCTimeRewards extends JavaPlugin {
      */
     public void initializeConfigUtil() {
         this.configUtil = new ConfigUtil(this);
+    }
+    
+    public me.kiro.vctime.managers.StatisticsManager getStatisticsManager() {
+        return statisticsManager;
+    }
+    
+    public me.kiro.vctime.managers.AchievementManager getAchievementManager() {
+        return achievementManager;
+    }
+    
+    public me.kiro.vctime.guis.ModernLeaderboardGUI getModernLeaderboardGUI() {
+        return modernLeaderboardGUI;
+    }
+    
+    public me.kiro.vctime.guis.StatisticsGUI getStatisticsGUI() {
+        return statisticsGUI;
     }
 }
