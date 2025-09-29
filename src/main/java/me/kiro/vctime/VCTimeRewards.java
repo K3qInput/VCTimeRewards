@@ -105,16 +105,13 @@ public class VCTimeRewards extends JavaPlugin {
                     () -> getServer().getPluginManager().registerEvents(discordListener, this));
         }
         
-        // Register commands
-        getCommand("vctime").setExecutor(new VCTimeCommand(this));
-        getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
-        getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
-        
         // Register help menu command as singleton to prevent memory leaks
         me.kiro.vctime.commands.HelpMenuCommand helpCommand = new me.kiro.vctime.commands.HelpMenuCommand(this);
         
-        // Update VCTimeCommand to use the help system properly
+        // Register commands
         getCommand("vctime").setExecutor(new VCTimeCommand(this, helpCommand));
+        getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
+        getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
         
         // Register PlaceholderAPI expansion
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
