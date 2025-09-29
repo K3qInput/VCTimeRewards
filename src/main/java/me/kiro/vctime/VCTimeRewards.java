@@ -8,6 +8,8 @@ import me.kiro.vctime.managers.OptimizedDataManager;
 import me.kiro.vctime.managers.TimeManager;
 import me.kiro.vctime.placeholders.VCTimeExpansion;
 import me.kiro.vctime.utils.ConfigUtil;
+import me.kiro.vctime.utils.EnhancedLogger;
+import me.kiro.vctime.utils.ErrorHandler;
 import me.kiro.vctime.utils.PerformanceMonitor;
 import org.bukkit.plugin.java.JavaPlugin;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -22,6 +24,8 @@ public class VCTimeRewards extends JavaPlugin {
     private ChatManager chatManager;
     private OptimizedDataManager dataManager;
     private PerformanceMonitor performanceMonitor;
+    private EnhancedLogger enhancedLogger;
+    private ErrorHandler errorHandler;
     private ConfigUtil configUtil;
     private DiscordListener discordListener;
     private VCTimeExpansion placeholderExpansion;
@@ -34,26 +38,40 @@ public class VCTimeRewards extends JavaPlugin {
         saveDefaultConfig();
         configUtil = new ConfigUtil(this);
         
-        // Initialize managers
-        timeManager = new TimeManager(this);
-        chatManager = new ChatManager(this);
-        dataManager = new OptimizedDataManager(this);
-        performanceMonitor = new PerformanceMonitor(this);
+        // Initialize enhanced logging and error handling first
+        enhancedLogger = new EnhancedLogger(this);
+        errorHandler = new ErrorHandler(this, enhancedLogger);
+        
+        // Initialize managers with enhanced error handling
+        timeManager = errorHandler.handleException("TimeManager_Init", 
+                () -> new TimeManager(this), null).orElse(null);
+        chatManager = errorHandler.handleException("ChatManager_Init", 
+                () -> new ChatManager(this), null).orElse(null);
+        dataManager = errorHandler.handleException("DataManager_Init", 
+                () -> new OptimizedDataManager(this), null).orElse(null);
+        performanceMonitor = errorHandler.handleException("PerformanceMonitor_Init", 
+                () -> new PerformanceMonitor(this), null).orElse(null);
         
         // Warm up cache for better performance
         dataManager.warmUpCache();
         
         // Wait for DiscordSRV to be ready
         if (getServer().getPluginManager().getPlugin("DiscordSRV") == null) {
-            getLogger().severe("DiscordSRV not found! This plugin requires DiscordSRV to function.");
+            enhancedLogger.error("STARTUP", "DiscordSRV not found! This plugin requires DiscordSRV to function.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         
-        // Register Discord listener
-        discordListener = new DiscordListener(this, timeManager, chatManager);
-        discordListener.initializeListener();
-        getServer().getPluginManager().registerEvents(discordListener, this);
+        // Register Discord listener with error handling
+        discordListener = errorHandler.handleException("DiscordListener_Init", 
+                () -> new DiscordListener(this, timeManager, chatManager), null).orElse(null);
+        
+        if (discordListener != null) {
+            errorHandler.handleOperation("DiscordListener_Initialize", 
+                    () -> discordListener.initializeListener());
+            errorHandler.handleOperation("DiscordListener_Register", 
+                    () -> getServer().getPluginManager().registerEvents(discordListener, this));
+        }
         
         // Register commands
         getCommand("vctime").setExecutor(new VCTimeCommand(this));
@@ -61,14 +79,20 @@ public class VCTimeRewards extends JavaPlugin {
         
         // Register PlaceholderAPI expansion
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            placeholderExpansion = new VCTimeExpansion(this);
-            placeholderExpansion.register();
-            getLogger().info("PlaceholderAPI integration enabled!");
+            placeholderExpansion = errorHandler.handleException("PlaceholderAPI_Init", 
+                    () -> new VCTimeExpansion(this), null).orElse(null);
+            
+            if (placeholderExpansion != null) {
+                errorHandler.handleOperation("PlaceholderAPI_Register", 
+                        () -> placeholderExpansion.register());
+                enhancedLogger.info("STARTUP", "PlaceholderAPI integration enabled!");
+            }
         } else {
-            getLogger().info("PlaceholderAPI not found - placeholders will not be available");
+            enhancedLogger.info("STARTUP", "PlaceholderAPI not found - placeholders will not be available");
         }
         
-        getLogger().info("VCTimeRewards plugin enabled successfully!");
+        enhancedLogger.info("STARTUP", "VCTimeRewards plugin enabled successfully!");
+        enhancedLogger.info("STARTUP", "All systems operational - World-class Discord voice rewards plugin ready!");
     }
     
     @Override
@@ -116,13 +140,22 @@ public class VCTimeRewards extends JavaPlugin {
         if (performanceMonitor != null) {
             try {
                 performanceMonitor.stopMonitoring();
-                getLogger().info("PerformanceMonitor stopped.");
+                enhancedLogger.info("SHUTDOWN", "PerformanceMonitor stopped.");
             } catch (Exception e) {
-                getLogger().warning("Error during PerformanceMonitor shutdown: " + e.getMessage());
+                enhancedLogger.error("SHUTDOWN", "Error during PerformanceMonitor shutdown", e);
             }
         }
         
-        getLogger().info("VCTimeRewards plugin disabled!");
+        if (enhancedLogger != null) {
+            try {
+                enhancedLogger.info("SHUTDOWN", "VCTimeRewards plugin shutdown complete!");
+                enhancedLogger.shutdown();
+            } catch (Exception e) {
+                getLogger().warning("Error during EnhancedLogger shutdown: " + e.getMessage());
+            }
+        } else {
+            getLogger().info("VCTimeRewards plugin disabled!");
+        }
     }
     
     public TimeManager getTimeManager() {
@@ -139,6 +172,14 @@ public class VCTimeRewards extends JavaPlugin {
     
     public PerformanceMonitor getPerformanceMonitor() {
         return performanceMonitor;
+    }
+    
+    public EnhancedLogger getEnhancedLogger() {
+        return enhancedLogger;
+    }
+    
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
     }
     
     public ConfigUtil getConfigUtil() {
