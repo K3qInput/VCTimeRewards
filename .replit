@@ -20,6 +20,10 @@ args = "Maven Build"
 task = "workflow.run"
 args = "maven_build"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build Plugin"
+
 [[workflows.workflow]]
 name = "Maven Build"
 author = "agent"
@@ -38,6 +42,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "mvn clean compile"
+
+[[workflows.workflow]]
+name = "Build Plugin"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mvn clean package -DskipTests"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 expertMode = true
