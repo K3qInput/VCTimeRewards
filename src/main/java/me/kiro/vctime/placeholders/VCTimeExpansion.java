@@ -116,6 +116,28 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             }
             
             if (params.equals("channel")) {
+                // First try StatisticsManager for current channel
+                if (plugin.getStatisticsManager() != null) {
+                    me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                    String channelId = stats.getCurrentChannel();
+                    if (channelId != null) {
+                        // Try to get channel name instead of ID
+                        try {
+                            Object jda = github.scarsz.discordsrv.DiscordSRV.getPlugin().getJda();
+                            if (jda != null) {
+                                Object channel = jda.getClass().getMethod("getVoiceChannelById", String.class).invoke(jda, channelId);
+                                if (channel != null) {
+                                    return (String) channel.getClass().getMethod("getName").invoke(channel);
+                                }
+                            }
+                        } catch (Exception e) {
+                            // Fall back to ID if name lookup fails
+                        }
+                        return channelId;
+                    }
+                }
+                
+                // Fallback to TimeManager
                 String channelId = plugin.getTimeManager().getCurrentChannel(playerId);
                 if (channelId != null) {
                     // Try to get channel name instead of ID
@@ -187,25 +209,103 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             return String.valueOf(plugin.getTimeManager().getSessionCount(playerId));
         }
         
-        // Simple today placeholder (approximate based on session data)
+        // Daily time placeholders using StatisticsManager
         if (params.equals("today")) {
-            // Since we don't have daily tracking, show current session time if active
-            if (player.isOnline()) {
-                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
-                long sessionMinutes = sessionMillis / 60000;
-                return TimeFormatter.formatTime(sessionMinutes);
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                long todayMillis = stats.getVoiceTimeToday();
+                long todayMinutes = todayMillis / 60000; // Convert milliseconds to minutes
+                return TimeFormatter.formatTime(todayMinutes);
             }
             return "0m";
         }
         
-        // Additional useful placeholders
+        if (params.equals("today_formatted")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                long todayMillis = stats.getVoiceTimeToday();
+                long todayMinutes = todayMillis / 60000;
+                return TimeFormatter.formatTimeDetailed(todayMinutes);
+            }
+            return "0 minutes";
+        }
+        
+        if (params.equals("yesterday")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                long yesterdayMillis = stats.getVoiceTimeYesterday();
+                long yesterdayMinutes = yesterdayMillis / 60000;
+                return TimeFormatter.formatTime(yesterdayMinutes);
+            }
+            return "0m";
+        }
+        
+        // Message placeholders using StatisticsManager
         if (params.equals("messages_today")) {
-            // Approximate daily messages (simplified)
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                return String.valueOf(stats.getMessagesToday());
+            }
             return "0";
         }
         
+        if (params.equals("sessions_today")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                return String.valueOf(stats.getSessionsToday());
+            }
+            return "0";
+        }
+        
+        if (params.equals("longest_session")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                long longestMillis = stats.getLongestSession();
+                long longestMinutes = longestMillis / 60000;
+                return TimeFormatter.formatTime(longestMinutes);
+            }
+            return "0m";
+        }
+        
         if (params.equals("last_seen")) {
-            return "Unknown";
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                long lastSeenTime = stats.getLastSeenTime();
+                if (lastSeenTime > 0) {
+                    // Format as "X hours ago", "X days ago", etc.
+                    long timeDiff = System.currentTimeMillis() - lastSeenTime;
+                    long minutes = timeDiff / (60 * 1000);
+                    long hours = minutes / 60;
+                    long days = hours / 24;
+                    
+                    if (days > 0) {
+                        return days + (days == 1 ? " day ago" : " days ago");
+                    } else if (hours > 0) {
+                        return hours + (hours == 1 ? " hour ago" : " hours ago");
+                    } else if (minutes > 0) {
+                        return minutes + (minutes == 1 ? " minute ago" : " minutes ago");
+                    } else {
+                        return "Just now";
+                    }
+                }
+            }
+            return "Never";
+        }
+        
+        if (params.equals("streak_days")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                return String.valueOf(stats.getCurrentStreak());
+            }
+            return "0";
+        }
+        
+        if (params.equals("best_streak")) {
+            if (plugin.getStatisticsManager() != null) {
+                me.kiro.vctime.managers.StatisticsManager.PlayerStatistics stats = plugin.getStatisticsManager().getStats(playerId);
+                return String.valueOf(stats.getBestStreak());
+            }
+            return "0";
         }
         
         return null; // Placeholder not found
