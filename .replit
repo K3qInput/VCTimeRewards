@@ -41,3 +41,8 @@ args = "mvn clean compile"
 
 [agent]
 expertMode = true
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["echo", "VCTimeRewards plugin JAR built successfully. This is a Minecraft plugin that should be deployed to a Minecraft server's plugins folder."]
+build = ["mvn", "clean", "package", "-DskipTests"]
