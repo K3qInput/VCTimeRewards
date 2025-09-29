@@ -52,22 +52,31 @@ public class VCTimeExpansion extends PlaceholderExpansion {
         
         // Voice time placeholders
         if (params.equals("total")) {
-            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
             return TimeFormatter.formatTime(totalMinutes);
         }
         
         if (params.equals("total_minutes")) {
-            return String.valueOf(plugin.getTimeManager().getTotalTime(playerId));
+            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
+            return String.valueOf(totalMillis / 60000); // Convert milliseconds to minutes
         }
         
         if (params.equals("total_hours")) {
-            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
             return String.valueOf(totalMinutes / 60);
         }
         
         if (params.equals("total_formatted")) {
-            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
+            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
             return TimeFormatter.formatTimeDetailed(totalMinutes);
+        }
+        
+        if (params.equals("total_seconds")) {
+            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
+            return String.valueOf(totalMillis / 1000); // Convert milliseconds to seconds
         }
         
         // Session placeholders (only work for online players)
@@ -75,16 +84,19 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             Player onlinePlayer = player.getPlayer();
             
             if (params.equals("session")) {
-                long sessionMinutes = plugin.getTimeManager().getSessionTime(playerId);
+                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
+                long sessionMinutes = sessionMillis / 60000; // Convert milliseconds to minutes
                 return TimeFormatter.formatTime(sessionMinutes);
             }
             
             if (params.equals("session_minutes")) {
-                return String.valueOf(plugin.getTimeManager().getSessionTime(playerId));
+                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
+                return String.valueOf(sessionMillis / 60000); // Convert milliseconds to minutes
             }
             
             if (params.equals("session_formatted")) {
-                long sessionMinutes = plugin.getTimeManager().getSessionTime(playerId);
+                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
+                long sessionMinutes = sessionMillis / 60000; // Convert milliseconds to minutes
                 return TimeFormatter.formatTimeDetailed(sessionMinutes);
             }
             
@@ -101,6 +113,21 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             if (params.equals("status_symbol")) {
                 boolean inVoice = plugin.getTimeManager().isPlayerInTrackedVoiceChannel(playerId);
                 return inVoice ? "🔊" : "🔇";
+            }
+            
+            if (params.equals("channel")) {
+                String channelId = plugin.getTimeManager().getCurrentChannel(playerId);
+                return channelId != null ? channelId : "None";
+            }
+            
+            if (params.equals("is_online")) {
+                boolean inVoice = plugin.getTimeManager().isPlayerInTrackedVoiceChannel(playerId);
+                return String.valueOf(inVoice);
+            }
+            
+            if (params.equals("is_tracking")) {
+                boolean tracking = plugin.getTimeManager().isPlayerInTrackedVoiceChannel(playerId);
+                return String.valueOf(tracking);
             }
         }
         
@@ -136,7 +163,8 @@ public class VCTimeExpansion extends PlaceholderExpansion {
         
         // Statistics
         if (params.equals("avg_session")) {
-            long avgMinutes = plugin.getTimeManager().getAverageSessionTime(playerId);
+            long avgMillis = plugin.getTimeManager().getAverageSessionTime(playerId);
+            long avgMinutes = avgMillis / 60000; // Convert milliseconds to minutes
             return TimeFormatter.formatTime(avgMinutes);
         }
         
@@ -174,11 +202,13 @@ public class VCTimeExpansion extends PlaceholderExpansion {
                 case "name":
                     return entry.getPlayerName();
                 case "time":
-                    return TimeFormatter.formatTime(entry.getTotalTime());
+                    long timeMinutes = entry.getTotalTime() / 60000; // Convert milliseconds to minutes
+                    return TimeFormatter.formatTime(timeMinutes);
                 case "time_minutes":
-                    return String.valueOf(entry.getTotalTime());
+                    return String.valueOf(entry.getTotalTime() / 60000); // Convert milliseconds to minutes
                 case "time_hours":
-                    return String.valueOf(entry.getTotalTime() / 60);
+                    long totalMinutes = entry.getTotalTime() / 60000; // Convert milliseconds to minutes
+                    return String.valueOf(totalMinutes / 60);
                 case "messages":
                     return String.valueOf(plugin.getChatManager().getMessageCount(entry.getPlayerId()));
                 default:
@@ -204,7 +234,8 @@ public class VCTimeExpansion extends PlaceholderExpansion {
         
         try {
             long targetMinutes = parseTimeThreshold(threshold);
-            long currentMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            long currentMillis = plugin.getTimeManager().getTotalTime(playerId);
+            long currentMinutes = currentMillis / 60000; // Convert milliseconds to minutes
             
             if (type.equals("percent")) {
                 double progress = Math.min((double) currentMinutes / targetMinutes * 100, 100);
