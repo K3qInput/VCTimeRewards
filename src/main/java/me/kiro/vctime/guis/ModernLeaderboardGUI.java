@@ -45,97 +45,91 @@ public class ModernLeaderboardGUI implements Listener {
      * Open the main leaderboard selection menu
      */
     public void openLeaderboardSelection(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 45, ColorUtil.translateColors("&6&l✨ Leaderboard Center ✨"));
+        Inventory gui = Bukkit.createInventory(null, 45, ColorUtil.translateColors("&#1a1a1a&l⚡ &#3d5a80LEADERBOARDS &#1a1a1a&l⚡"));
         
-        // Decorative border with gradient effect
-        addGradientBorder(gui);
+        // Modern sleek border with dark theme
+        addModernBorder(gui);
         
-        // Voice Time Leaderboard
-        gui.setItem(11, createItem(Material.DIAMOND, 
-            "&b&l🎤 Voice Time Rankings", 
-            "&7View the top players ranked by",
-            "&7total Discord voice channel time.",
+        // Voice Time Leaderboard - Modern Cyan/Blue theme
+        gui.setItem(11, createItem(Material.CYAN_GLAZED_TERRACOTTA, 
+            "&#00d9ff&l⚡ VOICE TIME", 
+            "&#7f8c8d┃ &fView top voice contributors",
+            "&#7f8c8d┃ &fRanked by total time",
             "",
-            "&e📊 &fTop performers:",
-            "&7• Amazing dedication rewards",
-            "&7• Real-time ranking updates",
-            "&7• Interactive player profiles",
+            "&#00d9ff⚡ &fLive Rankings",
+            "&#7f8c8d⬥ &fReal-time updates",
+            "&#7f8c8d⬥ &fInteractive profiles",
             "",
-            "&a➤ Click to view voice rankings"));
+            "&#00ff88➤ &fClick to Open"));
             
-        // Chat Message Leaderboard
-        gui.setItem(13, createItem(Material.WRITABLE_BOOK, 
-            "&a&l💬 Chat Activity Rankings", 
-            "&7See who's most active in Discord chat",
-            "&7with message count leaderboards.",
+        // Chat Message Leaderboard - Modern Green theme
+        gui.setItem(13, createItem(Material.LIME_GLAZED_TERRACOTTA, 
+            "&#00ff88&l💬 CHAT ACTIVITY", 
+            "&#7f8c8d┃ &fMost active Discord chatters",
+            "&#7f8c8d┃ &fMessage count rankings",
             "",
-            "&e📊 &fFeatures:",
-            "&7• Discord message tracking",
-            "&7• Daily and total statistics",
-            "&7• Community engagement metrics",
+            "&#00ff88💬 &fCommunity Stats",
+            "&#7f8c8d⬥ &fDaily tracking",
+            "&#7f8c8d⬥ &fTotal messages",
             "",
-            "&a➤ Click to view chat rankings"));
+            "&#00ff88➤ &fClick to Open"));
             
-        // Combined Leaderboard
-        gui.setItem(15, createItem(Material.NETHER_STAR, 
-            "&d&l⭐ Combined Rankings", 
-            "&7Ultimate leaderboard combining",
-            "&7voice time and chat activity.",
+        // Combined Leaderboard - Modern Purple theme
+        gui.setItem(15, createItem(Material.AMETHYST_SHARD, 
+            "&#b24bf3&l⭐ COMBINED", 
+            "&#7f8c8d┃ &fUltimate rankings",
+            "&#7f8c8d┃ &fVoice + Chat combined",
             "",
-            "&e📊 &fScoring system:",
-            "&7• Voice minutes = points",
-            "&7• Chat messages = points",
-            "&7• Total combined score ranking",
+            "&#b24bf3⭐ &fTotal Score",
+            "&#7f8c8d⬥ &fVoice minutes",
+            "&#7f8c8d⬥ &fChat messages",
             "",
-            "&a➤ Click to view combined rankings"));
+            "&#00ff88➤ &fClick to Open"));
             
-        // Competition Info
-        gui.setItem(29, createItem(Material.GOLD_BLOCK, 
-            "&6&l🏆 Competition Info", 
-            "&7Learn about ongoing competitions",
-            "&7and special events.",
+        // Competition Info - Modern Gold theme
+        gui.setItem(29, createItem(Material.GOLD_INGOT, 
+            "&#ffd700&l🏆 EVENTS", 
+            "&#7f8c8d┃ &fOngoing competitions",
+            "&#7f8c8d┃ &fSpecial challenges",
             "",
-            "&e🎯 &fCurrent Events:",
-            "&7• Weekly voice time challenges",
-            "&7• Monthly chat competitions",
-            "&7• Special seasonal rewards",
+            "&#ffd700🏆 &fActive Now",
+            "&#7f8c8d⬥ &fWeekly challenges",
+            "&#7f8c8d⬥ &fMonthly contests",
             "",
-            "&a➤ Click for competition details"));
+            "&#00ff88➤ &fClick to View"));
             
-        // Player Stats
+        // Player Stats - Modern Orange theme
         gui.setItem(31, createItem(Material.PLAYER_HEAD, 
-            "&e&l📊 Your Statistics", 
-            "&7View your detailed performance",
-            "&7statistics and progress.",
+            "&#ff6b35&l📊 YOUR STATS", 
+            "&#7f8c8d┃ &fPersonal performance",
+            "&#7f8c8d┃ &fDetailed analytics",
             "",
-            "&e📈 &fYour metrics:",
-            "&7• Personal voice time data",
-            "&7• Chat activity analysis",
-            "&7• Ranking progression",
+            "&#ff6b35📊 &fYour Data",
+            "&#7f8c8d⬥ &fVoice time",
+            "&#7f8c8d⬥ &fChat activity",
             "",
-            "&a➤ Click to view your stats"));
+            "&#00ff88➤ &fClick to View"));
             
-        // Settings
-        gui.setItem(33, createItem(Material.COMPARATOR, 
-            "&3&l⚙️ Display Settings", 
-            "&7Customize how leaderboards",
-            "&7are displayed to you.",
+        // Settings - Modern Teal theme
+        gui.setItem(33, createItem(Material.REPEATER, 
+            "&#00ffff&l⚙ SETTINGS", 
+            "&#7f8c8d┃ &fCustomize display",
+            "&#7f8c8d┃ &fPreferences",
             "",
-            "&e🎨 &fOptions:",
-            "&7• Animation preferences",
-            "&7• Sound settings",
-            "&7• Display format options",
+            "&#00ffff⚙ &fOptions",
+            "&#7f8c8d⬥ &fAnimations",
+            "&#7f8c8d⬥ &fSound effects",
             "",
-            "&a➤ Click to customize"));
+            "&#00ff88➤ &fClick to Edit"));
         
-        // Info item
-        gui.setItem(40, createItem(Material.BOOK, 
-            "&f&l📖 Leaderboard Guide", 
-            "&7Learn how rankings work and",
-            "&7how to climb the leaderboards.",
+        // Info item - Modern White theme
+        gui.setItem(40, createItem(Material.ENCHANTED_BOOK, 
+            "&#ffffff&l📖 INFO", 
+            "&#7f8c8d┃ &fHow rankings work",
+            "&#7f8c8d┃ &fUpdates every 10s",
             "",
-            "&7Rankings update every 10 seconds",
-            "&7for the most accurate results!"));
+            "&#7f8c8d⬥ &fLive tracking",
+            "&#7f8c8d⬥ &fAccurate results"));
         
         openGuis.put(player.getUniqueId(), "selection");
         player.openInventory(gui);
@@ -169,7 +163,7 @@ public class ModernLeaderboardGUI implements Listener {
         int totalPages = (int) Math.ceil((double) leaderboard.size() / itemsPerPage);
         page = Math.max(1, Math.min(page, totalPages));
         
-        String title = String.format("&b&l🎤 Voice Leaderboard &f(&7Page %d/%d&f)", page, Math.max(1, totalPages));
+        String title = String.format("&#1a1a1a&l⚡ &#00d9ffVOICE TIME &#1a1a1a&l⚡ &#7f8c8d(%d/%d)", page, Math.max(1, totalPages));
         Inventory gui = Bukkit.createInventory(null, 54, ColorUtil.translateColors(title));
         
         // Add navigation and decoration
@@ -212,7 +206,7 @@ public class ModernLeaderboardGUI implements Listener {
         });
         
         // For now, show a placeholder
-        Inventory gui = Bukkit.createInventory(null, 54, ColorUtil.translateColors("&a&l💬 Chat Leaderboard"));
+        Inventory gui = Bukkit.createInventory(null, 54, ColorUtil.translateColors("&#1a1a1a&l⚡ &#00ff88CHAT ACTIVITY &#1a1a1a&l⚡"));
         addLeaderboardBorder(gui);
         
         gui.setItem(22, createItem(Material.WRITABLE_BOOK, 
@@ -278,12 +272,12 @@ public class ModernLeaderboardGUI implements Listener {
      */
     private String getRankDisplay(int rank) {
         switch (rank) {
-            case 1: return "&6&l👑 #1";
-            case 2: return "&7&l🥈 #2";
-            case 3: return "&c&l🥉 #3";
+            case 1: return "&#ffd700&l👑 #1";
+            case 2: return "&#c0c0c0&l🥈 #2";
+            case 3: return "&#cd7f32&l🥉 #3";
             default: 
-                if (rank <= 10) return "&e&l⭐ #" + rank;
-                else return "&7#" + rank;
+                if (rank <= 10) return "&#00d9ff&l⚡ #" + rank;
+                else return "&#7f8c8d#" + rank;
         }
     }
     
@@ -291,55 +285,68 @@ public class ModernLeaderboardGUI implements Listener {
      * Get rank badge description
      */
     private String getRankBadge(int rank) {
-        if (rank == 1) return ColorUtil.translateColors("&6&l🏆 CHAMPION - Voice Time Leader!");
-        else if (rank == 2) return ColorUtil.translateColors("&7&l🥈 LEGEND - Outstanding dedication!");
-        else if (rank == 3) return ColorUtil.translateColors("&c&l🥉 EXPERT - Impressive commitment!");
-        else if (rank <= 10) return ColorUtil.translateColors("&e&l⭐ TOP 10 - Elite performer!");
-        else if (rank <= 25) return ColorUtil.translateColors("&a&l🌟 TOP 25 - Great participant!");
-        else return ColorUtil.translateColors("&7Active community member");
+        if (rank == 1) return ColorUtil.translateColors("&#ffd700&l👑 CHAMPION - Ultimate Leader!");
+        else if (rank == 2) return ColorUtil.translateColors("&#c0c0c0&l🥈 LEGEND - Elite Status!");
+        else if (rank == 3) return ColorUtil.translateColors("&#cd7f32&l🥉 MASTER - Top Tier!");
+        else if (rank <= 10) return ColorUtil.translateColors("&#00d9ff&l⚡ TOP 10 - Rising Star!");
+        else if (rank <= 25) return ColorUtil.translateColors("&#00ff88&l🌟 TOP 25 - Active Member!");
+        else return ColorUtil.translateColors("&#7f8c8d⭐ Community Member");
     }
     
     /**
-     * Add gradient border to GUI
+     * Add modern sleek border to GUI with dark theme
      */
-    private void addGradientBorder(Inventory gui) {
-        // Top row - gradient from purple to blue
-        ItemStack purple = createItem(Material.PURPLE_STAINED_GLASS_PANE, " ", "");
-        ItemStack magenta = createItem(Material.MAGENTA_STAINED_GLASS_PANE, " ", "");
-        ItemStack blue = createItem(Material.BLUE_STAINED_GLASS_PANE, " ", "");
+    private void addModernBorder(Inventory gui) {
+        // Sleek black and cyan border for modern look
+        ItemStack black = createItem(Material.BLACK_STAINED_GLASS_PANE, " ", "");
+        ItemStack cyan = createItem(Material.CYAN_STAINED_GLASS_PANE, " ", "");
+        ItemStack gray = createItem(Material.GRAY_STAINED_GLASS_PANE, " ", "");
         
-        gui.setItem(0, purple);
-        gui.setItem(1, magenta);
-        gui.setItem(2, blue);
-        gui.setItem(3, blue);
-        gui.setItem(4, blue);
-        gui.setItem(5, blue);
-        gui.setItem(6, blue);
-        gui.setItem(7, magenta);
-        gui.setItem(8, purple);
+        // Top row - modern pattern: black, cyan accents
+        gui.setItem(0, cyan);
+        gui.setItem(1, black);
+        gui.setItem(2, black);
+        gui.setItem(3, gray);
+        gui.setItem(4, black);
+        gui.setItem(5, gray);
+        gui.setItem(6, black);
+        gui.setItem(7, black);
+        gui.setItem(8, cyan);
         
-        // Bottom row - same gradient
-        for (int i = 36; i < 45; i++) {
-            gui.setItem(i, gui.getItem(i - 36));
-        }
+        // Bottom row - sleek symmetrical pattern
+        gui.setItem(36, cyan);
+        gui.setItem(37, black);
+        gui.setItem(38, black);
+        gui.setItem(39, gray);
+        gui.setItem(40, black);
+        gui.setItem(41, gray);
+        gui.setItem(42, black);
+        gui.setItem(43, black);
+        gui.setItem(44, cyan);
     }
     
     /**
-     * Add leaderboard border
+     * Add modern leaderboard border with dark theme
      */
     private void addLeaderboardBorder(Inventory gui) {
-        ItemStack border = createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, " ", "");
+        ItemStack black = createItem(Material.BLACK_STAINED_GLASS_PANE, " ", "");
+        ItemStack cyan = createItem(Material.CYAN_STAINED_GLASS_PANE, " ", "");
         
-        // Top and bottom rows
+        // Top and bottom rows - modern black with cyan accents
         for (int i = 0; i < 9; i++) {
-            gui.setItem(i, border);
-            gui.setItem(i + 45, border);
+            if (i == 0 || i == 4 || i == 8) {
+                gui.setItem(i, cyan);
+                gui.setItem(i + 45, cyan);
+            } else {
+                gui.setItem(i, black);
+                gui.setItem(i + 45, black);
+            }
         }
         
-        // Side columns
+        // Side columns - sleek black borders
         for (int i = 1; i < 5; i++) {
-            gui.setItem(i * 9, border);
-            gui.setItem(i * 9 + 8, border);
+            gui.setItem(i * 9, black);
+            gui.setItem(i * 9 + 8, black);
         }
     }
     
@@ -347,52 +354,52 @@ public class ModernLeaderboardGUI implements Listener {
      * Add navigation items (previous/next page, back button)
      */
     private void addNavigationItems(Inventory gui, int currentPage, int totalPages, String type) {
-        // Previous page
+        // Previous page - Modern cyan theme
         if (currentPage > 1) {
-            gui.setItem(45, createItem(Material.ARROW, 
-                "&a&l← Previous Page", 
-                "&7Go to page " + (currentPage - 1),
+            gui.setItem(45, createItem(Material.SPECTRAL_ARROW, 
+                "&#00d9ff&l◀ PREVIOUS", 
+                "&#7f8c8d┃ &fPage " + (currentPage - 1),
                 "",
-                "&a➤ Click to go back"));
+                "&#00ff88➤ &fClick to Go Back"));
         }
         
-        // Page info
-        gui.setItem(49, createItem(Material.BOOK, 
-            "&e&lPage " + currentPage + " of " + totalPages, 
-            "&7Viewing leaderboard rankings",
+        // Page info - Modern white theme
+        gui.setItem(49, createItem(Material.ENCHANTED_BOOK, 
+            "&#ffffff&lPAGE " + currentPage + "/" + totalPages, 
+            "&#7f8c8d┃ &fLive Rankings",
             "",
-            "&7Total entries: &e" + (totalPages * 28),
-            "&7Updated every 10 seconds"));
+            "&#7f8c8d⬥ &fUpdates every 10s",
+            "&#7f8c8d⬥ &fTotal: " + (totalPages * 28) + " players"));
         
-        // Next page
+        // Next page - Modern cyan theme
         if (currentPage < totalPages) {
-            gui.setItem(53, createItem(Material.ARROW, 
-                "&a&lNext Page →", 
-                "&7Go to page " + (currentPage + 1),
+            gui.setItem(53, createItem(Material.SPECTRAL_ARROW, 
+                "&#00d9ff&lNEXT ▶", 
+                "&#7f8c8d┃ &fPage " + (currentPage + 1),
                 "",
-                "&a➤ Click to continue"));
+                "&#00ff88➤ &fClick to Continue"));
         }
         
-        // Back to selection
+        // Back to selection - Modern red theme
         gui.setItem(46, createItem(Material.BARRIER, 
-            "&c&l← Back to Selection", 
-            "&7Return to leaderboard menu",
+            "&#ff0000&l← BACK", 
+            "&#7f8c8d┃ &fReturn to menu",
             "",
-            "&c➤ Click to go back"));
+            "&#ff0000➤ &fClick to Go Back"));
     }
     
     /**
      * Add special highlights for top 3 players
      */
     private void addTopThreeHighlights(Inventory gui, List<PlayerTimeEntry> leaderboard) {
-        // Add special crown item for #1
+        // Add special crown item for #1 - Modern gold theme
         if (leaderboard.size() >= 1) {
-            gui.setItem(4, createItem(Material.GOLDEN_APPLE, 
-                "&6&l👑 CURRENT CHAMPION", 
-                "&7" + leaderboard.get(0).getPlayerName(),
-                "&7" + TimeFormatter.formatTime(leaderboard.get(0).getTotalTime()),
+            gui.setItem(4, createItem(Material.ENCHANTED_GOLDEN_APPLE, 
+                "&#ffd700&l👑 CHAMPION", 
+                "&#ffffff" + leaderboard.get(0).getPlayerName(),
+                "&#00d9ff" + TimeFormatter.formatTime(leaderboard.get(0).getTotalTime()),
                 "",
-                "&6The ultimate voice time leader!"));
+                "&#ffd700⭐ &fCurrent Leader!"));
         }
     }
     

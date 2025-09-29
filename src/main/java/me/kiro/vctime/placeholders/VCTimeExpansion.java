@@ -50,33 +50,30 @@ public class VCTimeExpansion extends PlaceholderExpansion {
         
         UUID playerId = player.getUniqueId();
         
-        // Voice time placeholders
+        // Voice time placeholders (getTotalTime(UUID) already returns minutes, not milliseconds!)
         if (params.equals("total")) {
-            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
-            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
+            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
             return TimeFormatter.formatTime(totalMinutes);
         }
         
         if (params.equals("total_minutes")) {
-            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
-            return String.valueOf(totalMillis / 60000); // Convert milliseconds to minutes
+            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            return String.valueOf(totalMinutes);
         }
         
         if (params.equals("total_hours")) {
-            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
-            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
+            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
             return String.valueOf(totalMinutes / 60);
         }
         
         if (params.equals("total_formatted")) {
-            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
-            long totalMinutes = totalMillis / 60000; // Convert milliseconds to minutes
+            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
             return TimeFormatter.formatTimeDetailed(totalMinutes);
         }
         
         if (params.equals("total_seconds")) {
-            long totalMillis = plugin.getTimeManager().getTotalTime(playerId);
-            return String.valueOf(totalMillis / 1000); // Convert milliseconds to seconds
+            long totalMinutes = plugin.getTimeManager().getTotalTime(playerId);
+            return String.valueOf(totalMinutes * 60); // Convert minutes to seconds
         }
         
         // Session placeholders (only work for online players)
@@ -84,19 +81,17 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             Player onlinePlayer = player.getPlayer();
             
             if (params.equals("session")) {
-                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
-                long sessionMinutes = sessionMillis / 60000; // Convert milliseconds to minutes
+                long sessionMinutes = plugin.getTimeManager().getSessionTime(playerId); // Already returns minutes
                 return TimeFormatter.formatTime(sessionMinutes);
             }
             
             if (params.equals("session_minutes")) {
-                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
-                return String.valueOf(sessionMillis / 60000); // Convert milliseconds to minutes
+                long sessionMinutes = plugin.getTimeManager().getSessionTime(playerId); // Already returns minutes
+                return String.valueOf(sessionMinutes);
             }
             
             if (params.equals("session_formatted")) {
-                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
-                long sessionMinutes = sessionMillis / 60000; // Convert milliseconds to minutes
+                long sessionMinutes = plugin.getTimeManager().getSessionTime(playerId); // Already returns minutes
                 return TimeFormatter.formatTimeDetailed(sessionMinutes);
             }
             
