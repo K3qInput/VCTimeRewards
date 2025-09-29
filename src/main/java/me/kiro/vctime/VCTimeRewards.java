@@ -213,12 +213,6 @@ public class VCTimeRewards extends JavaPlugin {
      * Helper method to initialize ConfigUtil safely
      */
     public void initializeConfigUtil() {
-        if (configUtil != null) {
-            configUtil = new ConfigUtil(this);
-        }
-    }
-    
-    public void initializeConfigUtil() {
         this.configUtil = new ConfigUtil(this);
     }
 }
