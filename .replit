@@ -14,34 +14,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Maven Build"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "maven_build"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Build Plugin"
-
-[[workflows.workflow]]
-name = "Maven Build"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "mvn clean package -DskipTests"
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow]]
-name = "maven_build"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "mvn clean compile"
 
 [[workflows.workflow]]
 name = "Build Plugin"
@@ -59,5 +32,5 @@ expertMode = true
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["echo", "VCTimeRewards plugin JAR built successfully. This is a Minecraft plugin that should be deployed to a Minecraft server's plugins folder."]
+run = ["echo", "VCTimeRewards plugin built successfully. Download the JAR from target/VCTimeRewards-1.0.0.jar and install it on your Minecraft server."]
 build = ["mvn", "clean", "package", "-DskipTests"]
