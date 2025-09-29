@@ -14,7 +14,10 @@ me/kiro/vctime/VCTimeRewards.class
 me/kiro/vctime/utils/RewardTester.class
 me/kiro/vctime/utils/TimeFormatter.class
 me/kiro/vctime/utils/ErrorHandler.class
+me/kiro/vctime/commands/LeaderboardCommand$CombinedLeaderEntry.class
 me/kiro/vctime/utils/EnhancedLogger$LogEntry.class
+me/kiro/vctime/commands/LeaderboardCommand$ChatLeaderEntry.class
+me/kiro/vctime/commands/LeaderboardCommand.class
 me/kiro/vctime/managers/OptimizedDataManager.class
 me/kiro/vctime/utils/PerformanceMonitor.class
 me/kiro/vctime/commands/VCTimeAdminCommand.class

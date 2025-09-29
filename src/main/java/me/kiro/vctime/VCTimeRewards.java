@@ -1,5 +1,6 @@
 package me.kiro.vctime;
 
+import me.kiro.vctime.commands.LeaderboardCommand;
 import me.kiro.vctime.commands.VCTimeCommand;
 import me.kiro.vctime.commands.VCTimeAdminCommand;
 import me.kiro.vctime.discord.DiscordListener;
@@ -76,6 +77,7 @@ public class VCTimeRewards extends JavaPlugin {
         // Register commands
         getCommand("vctime").setExecutor(new VCTimeCommand(this));
         getCommand("vctimeadmin").setExecutor(new VCTimeAdminCommand(this));
+        getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
         
         // Register PlaceholderAPI expansion
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {

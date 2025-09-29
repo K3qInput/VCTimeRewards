@@ -16,6 +16,11 @@ commands:
     description: Admin commands for VCTimeRewards
     usage: /vctimeadmin <status|reload|save|check|reset|list> [args]
     permission: vctime.admin
+  leaderboard:
+    description: View leaderboards for voice time and chat activity
+    usage: /leaderboard <voice|chat|combined|top> [gui]
+    permission: vctime.leaderboard
+    aliases: [lb, top, rankings]
     
 permissions:
   vctime.check:
@@ -24,3 +29,9 @@ permissions:
   vctime.admin:
     description: Allows administrative commands
     default: op
+  vctime.leaderboard:
+    description: Allows viewing leaderboards
+    default: true
+  vctime.notifications:
+    description: Allows receiving plugin notifications
+    default: true
