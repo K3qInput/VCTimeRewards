@@ -41,7 +41,8 @@ blacklisted-channels:
 # Time can be specified in minutes (m), hours (h), or just numbers (treated as hours for compatibility)
 # Commands are executed from console - use proper permissions
 # Available placeholders: {player} = player name, {threshold} = time reached
-rewards:
+# Voice channel time rewards
+voice_rewards:
   "1m": "minecraft:give {player} minecraft:coal 5"                       # 1 minute: 5 coal (for testing)
   "5m": "minecraft:give {player} minecraft:iron_ingot 3"                 # 5 minutes: 3 iron ingots
   "30m": "minecraft:give {player} minecraft:iron_ingot 10"               # 30 minutes: 10 iron ingots
@@ -53,6 +54,24 @@ rewards:
   "25h": "minecraft:give {player} minecraft:elytra 1"                    # 25 hours: elytra
   "50h": "minecraft:give {player} minecraft:beacon 1"                    # 50 hours: beacon
   "100h": "minecraft:give {player} minecraft:dragon_egg 1"               # 100 hours: dragon egg
+
+# Chat message rewards - given for every X messages sent in Discord
+# Available placeholders: {player} = player name, {messages} = total messages sent
+chat_rewards:
+  enabled: true
+  rewards:
+    10: "minecraft:give {player} minecraft:bread 3"                      # 10 messages: 3 bread
+    50: "minecraft:give {player} minecraft:apple 5"                      # 50 messages: 5 apples
+    100: "minecraft:give {player} minecraft:golden_apple 1"              # 100 messages: 1 golden apple
+    500: "minecraft:give {player} minecraft:diamond 2"                   # 500 messages: 2 diamonds
+    1000: "minecraft:give {player} minecraft:emerald_block 1"            # 1000 messages: 1 emerald block
+
+# Server boost rewards - given when someone boosts the Discord server
+# Available placeholders: {player} = player name
+boost_rewards:
+  enabled: true
+  reward: "minecraft:give {player} minecraft:netherite_ingot 3"          # Server boost: 3 netherite ingots
+  announcement: true                                                      # Announce boost rewards in chat
 
 # =================================================================
 # NOTIFICATIONS

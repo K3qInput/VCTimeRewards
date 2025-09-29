@@ -3,6 +3,7 @@ package me.kiro.vctime;
 import me.kiro.vctime.commands.VCTimeCommand;
 import me.kiro.vctime.commands.VCTimeAdminCommand;
 import me.kiro.vctime.discord.DiscordListener;
+import me.kiro.vctime.managers.ChatManager;
 import me.kiro.vctime.managers.TimeManager;
 import me.kiro.vctime.utils.ConfigUtil;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +16,7 @@ import github.scarsz.discordsrv.DiscordSRV;
 public class VCTimeRewards extends JavaPlugin {
     
     private TimeManager timeManager;
+    private ChatManager chatManager;
     private ConfigUtil configUtil;
     private DiscordListener discordListener;
     
@@ -26,8 +28,9 @@ public class VCTimeRewards extends JavaPlugin {
         saveDefaultConfig();
         configUtil = new ConfigUtil(this);
         
-        // Initialize time manager
+        // Initialize managers
         timeManager = new TimeManager(this);
+        chatManager = new ChatManager(this);
         
         // Wait for DiscordSRV to be ready
         if (getServer().getPluginManager().getPlugin("DiscordSRV") == null) {
@@ -37,7 +40,7 @@ public class VCTimeRewards extends JavaPlugin {
         }
         
         // Register Discord listener
-        discordListener = new DiscordListener(this, timeManager);
+        discordListener = new DiscordListener(this, timeManager, chatManager);
         discordListener.initializeListener();
         getServer().getPluginManager().registerEvents(discordListener, this);
         
@@ -62,19 +65,23 @@ public class VCTimeRewards extends JavaPlugin {
             }
         }
         
-        // Clean up TimeManager
+        // Clean up managers
         if (timeManager != null) {
             try {
                 timeManager.shutdown();
+                getLogger().info("TimeManager shutdown completed.");
             } catch (Exception e) {
-                getLogger().warning("Error during TimeManager cleanup: " + e.getMessage());
+                getLogger().warning("Error during TimeManager shutdown: " + e.getMessage());
             }
         }
         
-        // Stop all active tracking sessions and save data
-        if (timeManager != null) {
-            timeManager.stopAllTracking();
-            timeManager.saveAll();
+        if (chatManager != null) {
+            try {
+                chatManager.saveData();
+                getLogger().info("ChatManager data saved.");
+            } catch (Exception e) {
+                getLogger().warning("Error during ChatManager shutdown: " + e.getMessage());
+            }
         }
         
         getLogger().info("VCTimeRewards plugin disabled!");
@@ -82,6 +89,10 @@ public class VCTimeRewards extends JavaPlugin {
     
     public TimeManager getTimeManager() {
         return timeManager;
+    }
+    
+    public ChatManager getChatManager() {
+        return chatManager;
     }
     
     public ConfigUtil getConfigUtil() {

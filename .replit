@@ -35,3 +35,6 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "mvn clean compile"
+
+[agent]
+expertMode = true

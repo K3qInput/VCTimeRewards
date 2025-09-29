@@ -52,16 +52,19 @@ public class ConfigUtil {
     }
     
     /**
-     * Get reward commands mapped to minute thresholds (supports both minutes and hours)
+     * Get voice channel reward commands mapped to minute thresholds (supports both minutes and hours)
      */
-    public Map<Long, String> getRewardCommands() {
+    public Map<Long, String> getVoiceRewardCommands() {
         Map<Long, String> rewards = new HashMap<>();
         
-        if (config.isConfigurationSection("rewards")) {
-            for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
+        // Check for legacy "rewards" section first for backwards compatibility
+        String section = config.isConfigurationSection("voice_rewards") ? "voice_rewards" : "rewards";
+        
+        if (config.isConfigurationSection(section)) {
+            for (String key : config.getConfigurationSection(section).getKeys(false)) {
                 try {
                     long minutes = parseTimeToMinutes(key);
-                    String command = config.getString("rewards." + key);
+                    String command = config.getString(section + "." + key);
                     rewards.put(minutes, command);
                 } catch (NumberFormatException e) {
                     plugin.getLogger().warning("Invalid reward threshold: " + key + " (use format like '30m', '1h', or just number for hours)");
@@ -70,6 +73,56 @@ public class ConfigUtil {
         }
         
         return rewards;
+    }
+    
+    /**
+     * Get chat reward commands mapped to message count thresholds
+     */
+    public Map<Integer, String> getChatRewardCommands() {
+        Map<Integer, String> rewards = new HashMap<>();
+        
+        if (config.getBoolean("chat_rewards.enabled", false) && 
+            config.isConfigurationSection("chat_rewards.rewards")) {
+            for (String key : config.getConfigurationSection("chat_rewards.rewards").getKeys(false)) {
+                try {
+                    int messageCount = Integer.parseInt(key);
+                    String command = config.getString("chat_rewards.rewards." + key);
+                    rewards.put(messageCount, command);
+                } catch (NumberFormatException e) {
+                    plugin.getLogger().warning("Invalid chat reward threshold: " + key + " (must be a number)");
+                }
+            }
+        }
+        
+        return rewards;
+    }
+    
+    /**
+     * Check if chat rewards are enabled
+     */
+    public boolean isChatRewardsEnabled() {
+        return config.getBoolean("chat_rewards.enabled", false);
+    }
+    
+    /**
+     * Check if boost rewards are enabled
+     */
+    public boolean isBoostRewardsEnabled() {
+        return config.getBoolean("boost_rewards.enabled", false);
+    }
+    
+    /**
+     * Get the boost reward command
+     */
+    public String getBoostRewardCommand() {
+        return config.getString("boost_rewards.reward", "");
+    }
+    
+    /**
+     * Check if boost rewards should be announced
+     */
+    public boolean shouldAnnounceBoostRewards() {
+        return config.getBoolean("boost_rewards.announcement", true);
     }
     
     /**

@@ -53,7 +53,7 @@ public class RewardTester {
      * Test all reward commands configured in the config
      */
     public void testAllRewards(Player player) {
-        java.util.Map<Long, String> rewards = plugin.getConfigUtil().getRewardCommands();
+        java.util.Map<Long, String> rewards = plugin.getConfigUtil().getVoiceRewardCommands();
         
         plugin.getLogger().info("=== TESTING ALL REWARD COMMANDS ===");
         plugin.getLogger().info("Found " + rewards.size() + " reward commands to test");

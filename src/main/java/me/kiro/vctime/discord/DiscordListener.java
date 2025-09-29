@@ -24,6 +24,7 @@ public class DiscordListener implements Listener {
     
     private final VCTimeRewards plugin;
     private final TimeManager timeManager;
+    private final me.kiro.vctime.managers.ChatManager chatManager;
     private final Map<UUID, String> currentVoiceChannels = new ConcurrentHashMap<>();
     private final Map<String, Set<UUID>> channelMembers = new ConcurrentHashMap<>();
     private BukkitRunnable voiceCheckTask;
@@ -31,9 +32,10 @@ public class DiscordListener implements Listener {
     private int failedAttempts = 0;
     private static final int MAX_FAILED_ATTEMPTS = 5;
     
-    public DiscordListener(VCTimeRewards plugin, TimeManager timeManager) {
+    public DiscordListener(VCTimeRewards plugin, TimeManager timeManager, me.kiro.vctime.managers.ChatManager chatManager) {
         this.plugin = plugin;
         this.timeManager = timeManager;
+        this.chatManager = chatManager;
     }
     
     /**
@@ -387,5 +389,41 @@ public class DiscordListener implements Listener {
         
         // Use the ConfigUtil method that handles both whitelist and blacklist modes
         return plugin.getConfigUtil().shouldTrackChannel(channelId);
+    }
+    
+    /**
+     * Handle Discord message events for chat rewards
+     */
+    public void handleDiscordMessage(String discordUserId, String messageContent) {
+        try {
+            // Get linked Minecraft player UUID
+            UUID minecraftUUID = getLinkedPlayerUuid(discordUserId);
+            
+            if (minecraftUUID != null) {
+                // Handle the message for chat rewards
+                chatManager.handleMessage(minecraftUUID);
+                plugin.getLogger().fine("Processed Discord message from linked player: " + minecraftUUID);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error handling Discord message: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handle Discord server boost events
+     */
+    public void handleDiscordBoost(String discordUserId) {
+        try {
+            // Get linked Minecraft player UUID
+            UUID minecraftUUID = getLinkedPlayerUuid(discordUserId);
+            
+            if (minecraftUUID != null) {
+                // Handle the boost for rewards
+                chatManager.handleServerBoost(minecraftUUID);
+                plugin.getLogger().info("Processed Discord server boost from linked player: " + minecraftUUID);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error handling Discord boost: " + e.getMessage());
+        }
     }
 }

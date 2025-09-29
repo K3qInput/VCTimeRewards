@@ -213,8 +213,8 @@ public class TimeManager {
         // Debug logging
         plugin.getLogger().info("Checking rewards for " + player.getName() + " - Total time: " + minutes + " minutes");
         
-        // Get reward thresholds from config (now in minutes)
-        Map<Long, String> rewards = plugin.getConfigUtil().getRewardCommands();
+        // Get voice reward thresholds from config (now in minutes)
+        Map<Long, String> rewards = plugin.getConfigUtil().getVoiceRewardCommands();
         plugin.getLogger().info("Available rewards: " + rewards.keySet());
         
         for (Map.Entry<Long, String> entry : rewards.entrySet()) {
