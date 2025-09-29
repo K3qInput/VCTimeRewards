@@ -2,10 +2,12 @@ package me.kiro.vctime.placeholders;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.kiro.vctime.VCTimeRewards;
+import me.kiro.vctime.managers.TimeManager;
 import me.kiro.vctime.utils.TimeFormatter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -160,13 +162,13 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             String type = parts[2];
             
             // Get leaderboard data
-            var leaderboard = plugin.getTimeManager().getTopPlayers(Math.max(position, 10));
+            List<TimeManager.PlayerTimeEntry> leaderboard = plugin.getTimeManager().getTopPlayers(Math.max(position, 10));
             
             if (position < 1 || position > leaderboard.size()) {
                 return "";
             }
             
-            var entry = leaderboard.get(position - 1);
+            TimeManager.PlayerTimeEntry entry = leaderboard.get(position - 1);
             
             switch (type) {
                 case "name":

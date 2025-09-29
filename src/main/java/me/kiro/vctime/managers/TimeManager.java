@@ -494,6 +494,22 @@ public class TimeManager {
     }
     
     /**
+     * Get total time for a player by UUID (in minutes)
+     */
+    public long getTotalTime(UUID playerId) {
+        long totalMillis = totalTimes.getOrDefault(playerId, 0L);
+        
+        // Add current session time if player is being tracked
+        if (playerStartTimes.containsKey(playerId)) {
+            long sessionTime = System.currentTimeMillis() - playerStartTimes.get(playerId);
+            totalMillis += sessionTime;
+        }
+        
+        // Convert milliseconds to minutes
+        return totalMillis / (1000L * 60L);
+    }
+    
+    /**
      * Get current session time for a player (in minutes)
      */
     public long getSessionTime(UUID playerId) {

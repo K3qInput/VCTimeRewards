@@ -4,9 +4,11 @@ import me.kiro.vctime.commands.VCTimeCommand;
 import me.kiro.vctime.commands.VCTimeAdminCommand;
 import me.kiro.vctime.discord.DiscordListener;
 import me.kiro.vctime.managers.ChatManager;
+import me.kiro.vctime.managers.OptimizedDataManager;
 import me.kiro.vctime.managers.TimeManager;
 import me.kiro.vctime.placeholders.VCTimeExpansion;
 import me.kiro.vctime.utils.ConfigUtil;
+import me.kiro.vctime.utils.PerformanceMonitor;
 import org.bukkit.plugin.java.JavaPlugin;
 import github.scarsz.discordsrv.DiscordSRV;
 
@@ -18,6 +20,8 @@ public class VCTimeRewards extends JavaPlugin {
     
     private TimeManager timeManager;
     private ChatManager chatManager;
+    private OptimizedDataManager dataManager;
+    private PerformanceMonitor performanceMonitor;
     private ConfigUtil configUtil;
     private DiscordListener discordListener;
     private VCTimeExpansion placeholderExpansion;
@@ -33,6 +37,11 @@ public class VCTimeRewards extends JavaPlugin {
         // Initialize managers
         timeManager = new TimeManager(this);
         chatManager = new ChatManager(this);
+        dataManager = new OptimizedDataManager(this);
+        performanceMonitor = new PerformanceMonitor(this);
+        
+        // Warm up cache for better performance
+        dataManager.warmUpCache();
         
         // Wait for DiscordSRV to be ready
         if (getServer().getPluginManager().getPlugin("DiscordSRV") == null) {
@@ -95,6 +104,24 @@ public class VCTimeRewards extends JavaPlugin {
             }
         }
         
+        if (dataManager != null) {
+            try {
+                dataManager.shutdown();
+                getLogger().info("OptimizedDataManager shutdown completed.");
+            } catch (Exception e) {
+                getLogger().warning("Error during OptimizedDataManager shutdown: " + e.getMessage());
+            }
+        }
+        
+        if (performanceMonitor != null) {
+            try {
+                performanceMonitor.stopMonitoring();
+                getLogger().info("PerformanceMonitor stopped.");
+            } catch (Exception e) {
+                getLogger().warning("Error during PerformanceMonitor shutdown: " + e.getMessage());
+            }
+        }
+        
         getLogger().info("VCTimeRewards plugin disabled!");
     }
     
@@ -104,6 +131,14 @@ public class VCTimeRewards extends JavaPlugin {
     
     public ChatManager getChatManager() {
         return chatManager;
+    }
+    
+    public OptimizedDataManager getDataManager() {
+        return dataManager;
+    }
+    
+    public PerformanceMonitor getPerformanceMonitor() {
+        return performanceMonitor;
     }
     
     public ConfigUtil getConfigUtil() {
