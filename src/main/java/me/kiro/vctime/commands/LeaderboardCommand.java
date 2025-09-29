@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -128,7 +129,7 @@ public class LeaderboardCommand implements CommandExecutor {
      */
     private void showChatLeaderboard(CommandSender sender, boolean isGui) {
         // Get top chat participants async, then display on main thread
-        CompletableFuture<List<ChatLeaderEntry>> chatLeaderboard = getChatLeaderboard(10);
+        CompletableFuture<List<me.kiro.vctime.managers.ChatManager.ChatLeaderEntry>> chatLeaderboard = getChatLeaderboard(10);
         
         if (isGui && sender instanceof Player) {
             chatLeaderboard.thenAccept(leaderboard -> {
@@ -279,7 +280,7 @@ public class LeaderboardCommand implements CommandExecutor {
     /**
      * Show chat leaderboard in text format
      */
-    private void showChatText(CommandSender sender, List<ChatLeaderEntry> leaderboard) {
+    private void showChatText(CommandSender sender, List<me.kiro.vctime.managers.ChatManager.ChatLeaderEntry> leaderboard) {
         sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&9═══════════════════════════════════"));
         sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&b💬 &9&lCHAT MESSAGES LEADERBOARD"));
         sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&9═══════════════════════════════════"));
@@ -290,7 +291,7 @@ public class LeaderboardCommand implements CommandExecutor {
         }
         
         for (int i = 0; i < leaderboard.size(); i++) {
-            ChatLeaderEntry entry = leaderboard.get(i);
+            me.kiro.vctime.managers.ChatManager.ChatLeaderEntry entry = leaderboard.get(i);
             String position = getPositionFormat(i + 1);
             
             sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("%s &f%s &7- &b%s messages",
@@ -348,7 +349,7 @@ public class LeaderboardCommand implements CommandExecutor {
     /**
      * Announce top players in all categories
      */
-    private void announceTopPlayers(CommandSender sender, List<PlayerTimeEntry> voiceTop, List<ChatLeaderEntry> chatTop) {
+    private void announceTopPlayers(CommandSender sender, List<PlayerTimeEntry> voiceTop, List<me.kiro.vctime.managers.ChatManager.ChatLeaderEntry> chatTop) {
         sender.sendMessage("");
         sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6🏆 &e&lTOP PERFORMERS &6🏆"));
         sender.sendMessage("");
@@ -369,7 +370,7 @@ public class LeaderboardCommand implements CommandExecutor {
         // Chat messages top 3
         sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&b💬 Chat Champions:"));
         for (int i = 0; i < Math.min(3, chatTop.size()); i++) {
-            ChatLeaderEntry entry = chatTop.get(i);
+            me.kiro.vctime.managers.ChatManager.ChatLeaderEntry entry = chatTop.get(i);
             String medal = getMedal(i + 1);
             sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(String.format("  %s &f%s &7- &b%s messages",
                     medal,
@@ -384,15 +385,10 @@ public class LeaderboardCommand implements CommandExecutor {
     /**
      * Get chat leaderboard data
      */
-    private CompletableFuture<List<ChatLeaderEntry>> getChatLeaderboard(int limit) {
+    private CompletableFuture<List<me.kiro.vctime.managers.ChatManager.ChatLeaderEntry>> getChatLeaderboard(int limit) {
         return CompletableFuture.supplyAsync(() -> {
-            // This would be implemented with actual chat data from ChatManager
-            // For now, return a placeholder implementation
-            return Arrays.asList(
-                    new ChatLeaderEntry("TopChatter1", 1500),
-                    new ChatLeaderEntry("ChatMaster", 1200),
-                    new ChatLeaderEntry("TalkativePlayer", 950)
-            );
+            // Get real chat data from ChatManager
+            return plugin.getChatManager().getChatLeaderboard(limit);
         });
     }
     
@@ -401,14 +397,59 @@ public class LeaderboardCommand implements CommandExecutor {
      */
     private CompletableFuture<List<CombinedLeaderEntry>> getCombinedLeaderboard(int limit) {
         return CompletableFuture.supplyAsync(() -> {
-            // Calculate combined scores (voice time in minutes + message count)
-            // This would be implemented with actual data
-            return Arrays.asList(
-                    new CombinedLeaderEntry("SuperActive", 2500, 300, 800),
-                    new CombinedLeaderEntry("VoiceAndChat", 2200, 250, 650),
-                    new CombinedLeaderEntry("AllRounder", 1900, 200, 500)
-            );
+            // Get real data from both managers
+            List<PlayerTimeEntry> voiceData = plugin.getTimeManager().getTopPlayers(100); // Get more data for combining
+            java.util.Map<UUID, Integer> chatData = plugin.getChatManager().getAllMessageCounts();
+            
+            // Combine the data
+            java.util.Map<String, CombinedLeaderEntry> combinedData = new java.util.HashMap<>();
+            
+            // Add voice time data
+            for (PlayerTimeEntry entry : voiceData) {
+                String playerName = entry.getPlayerName();
+                long voiceTimeMinutes = entry.getTotalTime() / (1000 * 60); // Convert to minutes
+                combinedData.put(playerName, new CombinedLeaderEntry(playerName, 
+                    (int) voiceTimeMinutes, voiceTimeMinutes, 0));
+            }
+            
+            // Add chat data
+            for (java.util.Map.Entry<UUID, Integer> chatEntry : chatData.entrySet()) {
+                UUID playerId = chatEntry.getKey();
+                int messageCount = chatEntry.getValue();
+                String playerName = getPlayerNameFromUUID(playerId);
+                
+                CombinedLeaderEntry existing = combinedData.get(playerName);
+                if (existing != null) {
+                    // Update existing entry with chat data
+                    combinedData.put(playerName, new CombinedLeaderEntry(playerName,
+                        existing.combinedScore + messageCount, existing.voiceTime, messageCount));
+                } else {
+                    // Create new entry with only chat data
+                    combinedData.put(playerName, new CombinedLeaderEntry(playerName,
+                        messageCount, 0, messageCount));
+                }
+            }
+            
+            // Sort by combined score and limit results
+            return combinedData.values().stream()
+                    .sorted((a, b) -> Integer.compare(b.combinedScore, a.combinedScore))
+                    .limit(limit)
+                    .collect(java.util.stream.Collectors.toList());
         });
+    }
+    
+    /**
+     * Get player name from UUID
+     */
+    private String getPlayerNameFromUUID(UUID playerId) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null) {
+            return player.getName();
+        }
+        
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
+        String name = offlinePlayer.getName();
+        return name != null ? name : "Unknown";
     }
     
     /**
@@ -511,15 +552,6 @@ public class LeaderboardCommand implements CommandExecutor {
     }
     
     // Helper classes for leaderboard entries
-    private static class ChatLeaderEntry {
-        final String playerName;
-        final int messageCount;
-        
-        ChatLeaderEntry(String playerName, int messageCount) {
-            this.playerName = playerName;
-            this.messageCount = messageCount;
-        }
-    }
     
     private static class CombinedLeaderEntry {
         final String playerName;
@@ -536,7 +568,7 @@ public class LeaderboardCommand implements CommandExecutor {
     }
     
     // GUI functionality would be handled by a separate listener class
-    private void showChatGui(Player player, List<ChatLeaderEntry> leaderboard) {
+    private void showChatGui(Player player, List<me.kiro.vctime.managers.ChatManager.ChatLeaderEntry> leaderboard) {
         // Similar to voice GUI but for chat data
         player.sendMessage(ChatColor.AQUA + "Chat leaderboard GUI coming soon!");
     }

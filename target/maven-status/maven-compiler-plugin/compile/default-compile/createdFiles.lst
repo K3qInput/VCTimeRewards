@@ -3,6 +3,7 @@ me/kiro/vctime/utils/ConfigUtil.class
 me/kiro/vctime/utils/ErrorHandler$ErrorRecoveryAction.class
 me/kiro/vctime/discord/DiscordListener.class
 me/kiro/vctime/placeholders/VCTimeExpansion.class
+me/kiro/vctime/managers/ChatManager$ChatLeaderEntry.class
 me/kiro/vctime/utils/ColorUtil.class
 me/kiro/vctime/utils/EnhancedLogger$LogLevel.class
 me/kiro/vctime/managers/TimeManager$1.class
@@ -17,7 +18,6 @@ me/kiro/vctime/utils/TimeFormatter.class
 me/kiro/vctime/utils/ErrorHandler.class
 me/kiro/vctime/commands/LeaderboardCommand$CombinedLeaderEntry.class
 me/kiro/vctime/utils/EnhancedLogger$LogEntry.class
-me/kiro/vctime/commands/LeaderboardCommand$ChatLeaderEntry.class
 me/kiro/vctime/commands/LeaderboardCommand.class
 me/kiro/vctime/managers/OptimizedDataManager.class
 me/kiro/vctime/utils/PerformanceMonitor.class

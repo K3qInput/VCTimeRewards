@@ -256,6 +256,56 @@ public class ChatManager {
     }
     
     /**
+     * Get chat leaderboard data sorted by message count
+     */
+    public java.util.List<ChatLeaderEntry> getChatLeaderboard(int limit) {
+        return playerMessageCounts.entrySet().stream()
+                .sorted(java.util.Map.Entry.<UUID, Integer>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    UUID playerId = entry.getKey();
+                    int messageCount = entry.getValue();
+                    String playerName = getPlayerNameFromUUID(playerId);
+                    return new ChatLeaderEntry(playerName, messageCount);
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Get all player message counts for combined leaderboards
+     */
+    public java.util.Map<UUID, Integer> getAllMessageCounts() {
+        return new java.util.HashMap<>(playerMessageCounts);
+    }
+    
+    /**
+     * Get player name from UUID
+     */
+    private String getPlayerNameFromUUID(UUID playerId) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null) {
+            return player.getName();
+        }
+        
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
+        String name = offlinePlayer.getName();
+        return name != null ? name : "Unknown";
+    }
+    
+    /**
+     * Chat leaderboard entry class
+     */
+    public static class ChatLeaderEntry {
+        public final String playerName;
+        public final int messageCount;
+        
+        public ChatLeaderEntry(String playerName, int messageCount) {
+            this.playerName = playerName;
+            this.messageCount = messageCount;
+        }
+    }
+    
+    /**
      * Handle server boost reward
      */
     public void handleServerBoost(UUID playerId) {
