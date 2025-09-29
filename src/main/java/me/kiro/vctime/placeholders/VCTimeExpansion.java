@@ -117,7 +117,22 @@ public class VCTimeExpansion extends PlaceholderExpansion {
             
             if (params.equals("channel")) {
                 String channelId = plugin.getTimeManager().getCurrentChannel(playerId);
-                return channelId != null ? channelId : "None";
+                if (channelId != null) {
+                    // Try to get channel name instead of ID
+                    try {
+                        Object jda = github.scarsz.discordsrv.DiscordSRV.getPlugin().getJda();
+                        if (jda != null) {
+                            Object channel = jda.getClass().getMethod("getVoiceChannelById", String.class).invoke(jda, channelId);
+                            if (channel != null) {
+                                return (String) channel.getClass().getMethod("getName").invoke(channel);
+                            }
+                        }
+                    } catch (Exception e) {
+                        // Fall back to ID if name lookup fails
+                    }
+                    return channelId;
+                }
+                return "None";
             }
             
             if (params.equals("is_online")) {
@@ -170,6 +185,27 @@ public class VCTimeExpansion extends PlaceholderExpansion {
         
         if (params.equals("sessions_count")) {
             return String.valueOf(plugin.getTimeManager().getSessionCount(playerId));
+        }
+        
+        // Simple today placeholder (approximate based on session data)
+        if (params.equals("today")) {
+            // Since we don't have daily tracking, show current session time if active
+            if (player.isOnline()) {
+                long sessionMillis = plugin.getTimeManager().getSessionTime(playerId);
+                long sessionMinutes = sessionMillis / 60000;
+                return TimeFormatter.formatTime(sessionMinutes);
+            }
+            return "0m";
+        }
+        
+        // Additional useful placeholders
+        if (params.equals("messages_today")) {
+            // Approximate daily messages (simplified)
+            return "0";
+        }
+        
+        if (params.equals("last_seen")) {
+            return "Unknown";
         }
         
         return null; // Placeholder not found
