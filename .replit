@@ -1,7 +1,7 @@
-modules = ["java"]
+modules = ["java-graalvm22.3"]
 
 [nix]
-channel = "stable-24_05"
+channel = "stable-25_05"
 packages = ["maven"]
 
 [workflows]
