@@ -26,7 +26,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "mvn clean compile -X"
+args = "mvn clean package -DskipTests"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [[workflows.workflow]]
 name = "maven_build"
