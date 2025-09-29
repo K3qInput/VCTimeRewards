@@ -140,7 +140,20 @@ Preferred communication style: Simple, everyday language.
 - **Configuration Management**: Hot-reload support with validation
 
 ### Latest Enhancement (September 29, 2025)
-✅ **WORLD-CLASS PLUGIN OPTIMIZATION COMPLETE + REPLIT ENVIRONMENT SETUP**
+✅ **CRITICAL BUG FIXES + MODERN GUI REDESIGN**
+- 🐛 **CRITICAL FIX: PlaceholderAPI Scoreboard Bug**: Fixed placeholders showing "0m" in scoreboards while /vctime showed correct data
+  - Root cause: getTotalTime(UUID) returns minutes, but code was dividing by 60000 again (treating as milliseconds)
+  - Result: Values were 60000x smaller, causing "0m" display
+  - Fixed: Removed double conversion in all placeholder methods (total, session, total_minutes, etc.)
+  - Status: Placeholders now show accurate time values in scoreboards and external plugins
+- 🎨 **COMPLETE GUI MODERNIZATION**: Redesigned ModernLeaderboardGUI from classic 1.19 style to sleek modern design
+  - Modern dark theme with black/cyan/gray borders (replaced old purple/blue gradient)
+  - Contemporary hex colors: &#00d9ff (cyan), &#00ff88 (green), &#b24bf3 (purple), &#ffd700 (gold)
+  - Modern materials: CYAN_GLAZED_TERRACOTTA, AMETHYST_SHARD, ENCHANTED_GOLDEN_APPLE
+  - Sleek minimalist text with unicode symbols (⚡, ┃, ⬥)
+  - Updated all GUI titles, borders, navigation, and rank displays
+
+✅ **PREVIOUS ENHANCEMENTS - WORLD-CLASS PLUGIN OPTIMIZATION**
 - 🚀 **PlaceholderAPI Integration**: 30+ comprehensive placeholders for scoreboards (%vctime_total%, %vctime_session%, %vctime_rank%, etc.)
 - ⚡ **Advanced Performance Optimization**: Async data operations, multi-level caching, performance monitoring with automatic memory management
 - 🛡️ **Enterprise-Grade Error Handling**: Automatic recovery mechanisms, structured logging, critical error detection with admin notifications
