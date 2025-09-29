@@ -3,6 +3,7 @@ me/kiro/vctime/utils/ConfigUtil.class
 me/kiro/vctime/utils/ErrorHandler$ErrorRecoveryAction.class
 me/kiro/vctime/discord/DiscordListener.class
 me/kiro/vctime/placeholders/VCTimeExpansion.class
+me/kiro/vctime/utils/ColorUtil.class
 me/kiro/vctime/utils/EnhancedLogger$LogLevel.class
 me/kiro/vctime/managers/TimeManager$1.class
 me/kiro/vctime/managers/TimeManager$PlayerTimeEntry.class

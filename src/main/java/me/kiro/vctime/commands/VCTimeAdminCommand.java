@@ -26,7 +26,7 @@ public class VCTimeAdminCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("vctime.admin")) {
-            sender.sendMessage("§cYou don't have permission to use admin commands.");
+            sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cYou don't have permission to use admin commands."));
             return true;
         }
         
@@ -52,7 +52,7 @@ public class VCTimeAdminCommand implements CommandExecutor {
                 
             case "check":
                 if (args.length < 2) {
-                    sender.sendMessage("§cUsage: /vctimeadmin check <player>");
+                    sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cUsage: /vctimeadmin check <player>"));
                     return true;
                 }
                 checkPlayer(sender, args[1]);
@@ -60,7 +60,7 @@ public class VCTimeAdminCommand implements CommandExecutor {
                 
             case "reset":
                 if (args.length < 2) {
-                    sender.sendMessage("§cUsage: /vctimeadmin reset <player>");
+                    sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cUsage: /vctimeadmin reset <player>"));
                     return true;
                 }
                 resetPlayer(sender, args[1]);
@@ -87,14 +87,14 @@ public class VCTimeAdminCommand implements CommandExecutor {
     }
     
     private void sendHelpMessage(CommandSender sender) {
-        sender.sendMessage("§6=== VCTimeRewards Admin Commands ===");
-        sender.sendMessage("§e/vctimeadmin status §7- Show plugin status");
-        sender.sendMessage("§e/vctimeadmin reload §7- Reload configuration");
-        sender.sendMessage("§e/vctimeadmin save §7- Force save all data");
-        sender.sendMessage("§e/vctimeadmin check <player> §7- Check player's time");
-        sender.sendMessage("§e/vctimeadmin reset <player> §7- Reset player's time");
-        sender.sendMessage("§e/vctimeadmin list §7- List currently tracked players");
-        sender.sendMessage("§e/vctimeadmin test §7- Test all reward commands");
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6=== VCTimeRewards Admin Commands ==="));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin status &7- Show plugin status"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin reload &7- Reload configuration"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin save &7- Force save all data"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin check <player> &7- Check player's time"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin reset <player> &7- Reset player's time"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin list &7- List currently tracked players"));
+        sender.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&e/vctimeadmin test &7- Test all reward commands"));
     }
     
     private void showStatus(CommandSender sender) {

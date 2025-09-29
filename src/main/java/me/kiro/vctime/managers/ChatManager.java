@@ -291,7 +291,7 @@ public class ChatManager {
         
         // Announce if enabled
         if (plugin.getConfigUtil().shouldAnnounceBoostRewards()) {
-            Bukkit.broadcastMessage("§6🚀 " + playerName + " boosted the Discord server and received a reward!");
+            Bukkit.broadcastMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&6🚀 " + playerName + " boosted the Discord server and received a reward!"));
         }
         
         plugin.getLogger().info("BOOST REWARD: " + playerName + " boosted the server!");

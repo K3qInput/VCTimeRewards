@@ -3,6 +3,7 @@ package me.kiro.vctime.discord;
 import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.events.DiscordReadyEvent;
+import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
 import me.kiro.vctime.VCTimeRewards;
 import me.kiro.vctime.managers.TimeManager;
 import org.bukkit.entity.Player;
@@ -61,6 +62,29 @@ public class DiscordListener implements Listener {
         plugin.getLogger().info("DiscordSRV is ready - voice channel tracking can begin");
         isEnabled = true;
         failedAttempts = 0;
+    }
+    
+    /**
+     * Handle Discord message events for chat tracking
+     */
+    @Subscribe
+    public void onDiscordMessage(DiscordGuildMessageReceivedEvent event) {
+        try {
+            // Skip bot messages
+            if (event.getAuthor().isBot()) {
+                return;
+            }
+            
+            // Get Discord user ID
+            String discordUserId = event.getAuthor().getId();
+            String messageContent = event.getMessage().getContentDisplay();
+            
+            // Handle the message for chat rewards
+            handleDiscordMessage(discordUserId, messageContent);
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error processing Discord message event: " + e.getMessage());
+        }
     }
     
     /**

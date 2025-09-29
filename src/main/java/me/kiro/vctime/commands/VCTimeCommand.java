@@ -28,7 +28,7 @@ public class VCTimeCommand implements CommandExecutor {
         
         // Check if player has permission
         if (!player.hasPermission("vctime.check")) {
-            player.sendMessage("§cYou don't have permission to use this command.");
+            player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cYou don't have permission to use this command."));
             return true;
         }
         
@@ -36,13 +36,13 @@ public class VCTimeCommand implements CommandExecutor {
         Player target = player;
         if (args.length > 0) {
             if (!player.hasPermission("vctime.admin")) {
-                player.sendMessage("§cYou don't have permission to check other players' time.");
+                player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cYou don't have permission to check other players' time."));
                 return true;
             }
             
             target = plugin.getServer().getPlayer(args[0]);
             if (target == null) {
-                player.sendMessage("§cPlayer not found: " + args[0]);
+                player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&cPlayer not found: " + args[0]));
                 return true;
             }
         }
@@ -59,9 +59,9 @@ public class VCTimeCommand implements CommandExecutor {
         // Send message
         String timeString = String.format("%dh %dm %ds", hours, minutes, seconds);
         if (target.equals(player)) {
-            player.sendMessage("§aYour voice channel time: §f" + timeString);
+            player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&aYour voice channel time: &f" + timeString));
         } else {
-            player.sendMessage("§a" + target.getName() + "'s voice channel time: §f" + timeString);
+            player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors("&a" + target.getName() + "'s voice channel time: &f" + timeString));
         }
         
         return true;

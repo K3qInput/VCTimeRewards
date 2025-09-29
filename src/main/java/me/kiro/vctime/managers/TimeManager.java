@@ -336,7 +336,8 @@ public class TimeManager {
             String thresholdDisplay = formatMinutes(threshold);
             String message = plugin.getConfigUtil().getNotificationMessage()
                     .replace("{time}", thresholdDisplay);
-            player.sendMessage(message);
+            // Translate color codes including hex colors
+            player.sendMessage(me.kiro.vctime.utils.ColorUtil.translateColors(message));
         }
     }
     
